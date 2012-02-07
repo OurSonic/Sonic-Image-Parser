@@ -33,8 +33,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Properties\FreeImageNET.dll</HintPath>
+    </Reference>
     <Reference Include="SharpLZW">
       <HintPath>..\..\lzw\SharpLZW\LZW\bin\Release\SharpLZW.dll</HintPath>
     </Reference>

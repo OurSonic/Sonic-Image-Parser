@@ -17,7 +17,8 @@ namespace SonicImageParser
 
 
             var img = @"B:\code\oursonic\assets\Sprites\untitled.png";
-          var    b = new Bitmap(img);
+
+          /*var    b = new Bitmap(img);
             int c = 0;
             var get = getIndexes(img);
             foreach (var tuple in get)
@@ -35,7 +36,7 @@ namespace SonicImageParser
                 }
                 j.Save(@"B:\code\oursonic\assets\Sprites\spindash" + c + ".png");
                 c++;
-            }
+            }*/
         }
 
         static List<Tuple<int, int>> getIndexes(string image)
