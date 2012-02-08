@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define tga
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,21 +17,37 @@ namespace SonicImageParser
 {
     public class ChunkConsumer
     {
-        static string dir2 = @"B:\segastuff\Sonic3\Project\aiz1\";
+        static string dir2 ;
+        static string scriptName;
         public static int Grey = Color.FromArgb(32, 32, 32).ToArgb();
-        public static int Yellow = Color.FromArgb(224, 224, 0).ToArgb();
+        public static int Whitish = Color.FromArgb(32, 32, 32).ToArgb();
+        public static int Yellow = Color.FromArgb(231, 231, 231).ToArgb();
         private string gmc;
+        private Bitmap[] letters;
 
-        public ChunkConsumer()
+        public ChunkConsumer(string dir,string scr)
         {
-            
-             foreach (var file in new DirectoryInfo(dir2).GetFiles())
-              {
-                  var df = FreeImageAPI.FreeImage.Load(FreeImageAPI.FREE_IMAGE_FORMAT.FIF_TARGA, file.FullName, FreeImageAPI.FREE_IMAGE_LOAD_FLAGS.DEFAULT);
-                  FreeImageAPI.FreeImage.Save(FreeImageAPI.FREE_IMAGE_FORMAT.FIF_PNG, df, file.FullName.Replace("tga", "png"), FreeImageAPI.FREE_IMAGE_SAVE_FLAGS.DEFAULT);
-                  Console.WriteLine(file);
-              }
 
+            dir2 = dir;
+            scriptName = scr;
+#if tga
+
+            foreach (var file in new DirectoryInfo(dir2).GetFiles())
+            {
+                var df = FreeImageAPI.FreeImage.Load(FreeImageAPI.FREE_IMAGE_FORMAT.FIF_TARGA, file.FullName, FreeImageAPI.FREE_IMAGE_LOAD_FLAGS.DEFAULT);
+                FreeImageAPI.FreeImage.Save(FreeImageAPI.FREE_IMAGE_FORMAT.FIF_PNG, df, file.FullName.Replace("tga", "png"), FreeImageAPI.FREE_IMAGE_SAVE_FLAGS.DEFAULT);
+                df.SetNull();
+                Console.WriteLine(file);
+            }
+
+#endif
+
+            letters = new Bitmap[16];
+            for (int i = 0; i < 16; i++)
+            {
+                var f = @"B:\segastuff\Sonic3\Project\letters\";
+                letters[i] = new Bitmap(f + (i.ToString("X")) + ".png");
+            }
 
             Info n;
             n = fullLoad();
@@ -90,10 +107,14 @@ namespace SonicImageParser
 
             Dictionary<string, int> keycache = new Dictionary<string, int>();
             SpecialBitmap jz;
-            n.heightMap1 = getHightMap(n, jz=new SpecialBitmap(dir2 + "plane solid n 1.png"), keycache);
-  
-            n.heightMap2 = getHightMap(n, jz=new SpecialBitmap(dir2 + "plane solid n 2.png"), keycache);
-     
+            getAngleMap(n, jz = new SpecialBitmap(dir2 + "plane solid ang 1.png"), keycache, 1);
+            getAngleMap(n, jz = new SpecialBitmap(dir2 + "plane solid ang 2.png"), keycache, 2);
+
+            getHightMap(n, jz = new SpecialBitmap(dir2 + "plane solid n 1.png"), keycache, 1);
+            getHightMap(n, jz = new SpecialBitmap(dir2 + "plane solid n 2.png"), keycache, 2);
+
+
+
             n.heightIndexes = keycache.OrderBy(a => a.Value).Select(a => a.Key).ToArray();
 
         }
@@ -190,26 +211,96 @@ namespace SonicImageParser
                 data->blue = color.B;
             }
 
-            public void UnlockImage()
+            public void UnlockImage(string saveto)
             {
                 workingBitmap.UnlockBits(bitmapData);
-                workingBitmap.Dispose();
-                workingBitmap = null;
+                if(saveto!=null)
+                workingBitmap.Save(saveto);
+
+                    workingBitmap.Dispose();
+                    workingBitmap = null;
                 bitmapData = null;
                 pBase = null;
             }
 
             public void close()
             {
-                UnlockImage();
+                UnlockImage(null);
 
             }
         }
 
 
-
+        private void getAngleMap(Info n, SpecialBitmap b, Dictionary<string, int> keycache, int map)
+        {
  
-        private static int[] getHightMap(Info n, SpecialBitmap b, Dictionary<string, int> keycache)
+
+            Console.WriteLine("agaga ss");
+            TileChunk curChunk = n.TileChunks[n.ChunkMap[0]];
+            for (int a = 0; a < b.Height; a += 16)
+            {
+                for (int bc = 0; bc < b.Width; bc += 16)
+                {
+                    int chunky = a / 128;
+                    int chunkx = bc / 128;
+
+                    curChunk = n.TileChunks[n.ChunkMap[chunkx + chunky * n.LevelWidth]];
+                    byte[] dff = new byte[17];
+                    int piecex = (bc - chunkx * 128) / 16;
+                    int piecey = (a - chunky * 128) / 16;
+                    if (chunkx == 4 && chunky == 15 )
+                    {
+                        if (piecex == 6 && piecey == 2)
+                        {
+                            Console.WriteLine((chunkx * 128));
+                        }
+                    }
+                   
+
+                    var lt = new int[2] { -1, -1 };
+                    for (int i = 0; i < 2; i++)
+                    {
+                        foreach (var letter in letters)
+                        {
+                            bool notletter = false;
+                            for (int x = 0; x < 8; x++)
+                            {
+                                for (int y = 0; y < 16; y++)
+                                {
+                                    var m = b.GetPixel((bc) + x + i * 8, (a) + y);
+                                    var fc = letter.GetPixel(x, y);
+                                    if(fc.A!=0)
+                                    {
+                                        if(m!=fc.ToArgb())
+                                        {
+                                            notletter = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(notletter) break;
+                            }
+                            if(!notletter)
+                            {
+                                lt[i] = Array.IndexOf(letters, letter);
+                            }
+                        }
+                    } 
+                    if (lt[0] == -1 || lt[1] == -1)
+                    {  
+                        continue;
+                    }
+                    if (map == 1)
+                        curChunk.angleMap1[piecex + piecey*8] = lt[0].ToString("X") + lt[1].ToString("X");
+                    else
+                        curChunk.angleMap2[piecex + piecey * 8] = lt[0].ToString("X") + lt[1].ToString("X");
+                }
+            }
+            b.close();
+        }
+
+
+        private void getHightMap(Info n, SpecialBitmap b, Dictionary<string, int> keycache, int map)
         {
 
             for (int x = 0; x < plane.Width; x++)
@@ -222,32 +313,46 @@ namespace SonicImageParser
                     {
                         b.SetPixel(x, y, black);
                     }
-                  
+
                 }
             }
-            Console.WriteLine("solids ss" );
-            int[] df = new int[n.LevelWidth * 8 * n.LevelHeight * 8];
 
+            Console.WriteLine("solids ss");
+            TileChunk curChunk = n.TileChunks[n.ChunkMap[0]];
             for (int a = 0; a < b.Height; a += 16)
             {
                 for (int bc = 0; bc < b.Width; bc += 16)
                 {
-                    byte[] dff = new byte[16];
+                    int chunky = a / 128;
+                    int chunkx = bc / 128;
+
+                    curChunk = n.TileChunks[n.ChunkMap[chunkx + chunky * n.LevelWidth]];
+                    byte[] dff = new byte[17];
+                    int piecex = (bc - chunkx * 128) / 16;
+                    int piecey = (a - chunky * 128) / 16;
 
                     for (int x = 0; x < 16; x++)
                     {
+                        bool lineStarted = false;
                         for (int y = 0; y < 16; y++)
                         {
                             var m = b.GetPixel((bc) + x, (a) + y);
-                            var dd = m;
-                            if ((dd == Yellow))
+
+                            if ((m == Yellow) || (m == Grey) || (m == Whitish))
                             {
-                                dff[x] = 16;
-                                break;
+                                if (!lineStarted)
+                                {
+                                    lineStarted = true;
+                                    dff[x + 1] = (byte)(16 - y);
+                                    dff[0] = 0;
+
+                                }
                             }
-                            if ((dd == Grey))
+                            else if (lineStarted)
                             {
-                                dff[x] = (byte)(16 - y);
+                                dff[x + 1] = (byte)(y);
+
+                                dff[0] = 2;
                                 break;
                             }
                         }
@@ -263,12 +368,15 @@ namespace SonicImageParser
                     {
                         keycache.Add(mf, f = keycache.Count);
                     }
-                    df[bc / 16 + a / 16 * n.LevelWidth * 8] = f;
+                    if (map == 1)
+                        curChunk.heightMap1[piecex + piecey * 8] = f;
+                    else
+                        curChunk.heightMap2[piecex + piecey * 8] = f;
+
 
                 }
             }
             b.close();
-            return df;
         }
 
         private static char toBase17(byte b)
@@ -453,8 +561,8 @@ namespace SonicImageParser
                     }
                 }
             }
-             
-            Console.WriteLine("chunks "); 
+
+            Console.WriteLine("chunks ");
 
             var b = new SpecialBitmap(dir2 + "ChunkList.png");
             int inj = 0;
@@ -504,7 +612,7 @@ namespace SonicImageParser
             }
             b.close();
             inj = 0;
-            var highs = getColors(n, plane,pallet);
+            var highs = getColors(n, plane, pallet);
             foreach (var high in highs)
             {
 
@@ -515,11 +623,11 @@ namespace SonicImageParser
                 }
                 else
                 {
+                    n.ChunkMap.Add(0);
                     Console.WriteLine(inj++);
 
                 }
-            }
-
+            } 
             highs = getColors(n, dir2 + "plane highs.png", pallet);
             for (int index = 0; index < highs.Length; index++)
             {
@@ -542,7 +650,7 @@ namespace SonicImageParser
                         {
                             int p = tp.getPixel(j, k);
                             if (p != 0) allbalck = false;
-                            if (high[(_x * 16 + j) + (_y *  16 + k) * 128] != p)
+                            if (high[(_x * 16 + j) + (_y * 16 + k) * 128] != p)
                             {
                                 good = false;
                                 break;
@@ -551,11 +659,10 @@ namespace SonicImageParser
                     }
                     if (allbalck) continue;
                     ch.hLayer[i] = good ? 1 : 0;
-                } 
+                }
 
             }
-            
-
+             
             Console.WriteLine("solid ");
 
             solidLoad(n);
@@ -655,7 +762,7 @@ namespace SonicImageParser
             XmlSerializer sl = new XmlSerializer(typeof(Info));
 
             FileStream cd;
-            sl.Serialize(cd = File.OpenWrite("b:\\aiz1Chunks.xml"), n);
+            sl.Serialize(cd = File.OpenWrite("b:\\" + scriptName + ".xml"), n);
             cd.Close();
 
 
@@ -663,7 +770,7 @@ namespace SonicImageParser
                 new System.Web.Script.Serialization.JavaScriptSerializer();
             oSerializer.MaxJsonLength *= 10;
             string sJSON = oSerializer.Serialize(n);
-            File.WriteAllText("b:\\aiz1Chunks.js", sJSON);
+            File.WriteAllText("b:\\" + scriptName + ".js", sJSON);
 
             cd.Close();
 
@@ -709,7 +816,7 @@ namespace SonicImageParser
 
 
 
-        private int[][] getColors(Info n, string s,List<int> pallet)
+        private int[][] getColors(Info n, string s, List<int> pallet)
         {
             var b = new SpecialBitmap(s);
 
@@ -721,23 +828,23 @@ namespace SonicImageParser
             return g;
         }
 
-        private int[][] getColors(Info n, SpecialBitmap b,List<int> pallet )
+        private int[][] getColors(Info n, SpecialBitmap b, List<int> pallet)
         {
- 
+
 
             var md = Enumerable.Range(0, b.Height / 128).SelectMany(a =>
                                                                         {
-                                                                            Console.Write("COlor color: "+a);
-                                                                            return Enumerable.Range(0, b.Width/128).Select(bc =>
+                                                                            Console.Write("COlor color: " + a);
+                                                                            return Enumerable.Range(0, b.Width / 128).Select(bc =>
                                                                                                                                {
 
-                                                                                                                                   int[] j = new int[128*128];
+                                                                                                                                   int[] j = new int[128 * 128];
 
                                                                                                                                    for (int k = 0; k < 128; k++)
                                                                                                                                    {
                                                                                                                                        for (int d = 0; d < 128; d++)
                                                                                                                                        {
-                                                                                                                                           var m = b.GetPixel(k + bc*128, d + a*128);
+                                                                                                                                           var m = b.GetPixel(k + bc * 128, d + a * 128);
                                                                                                                                            j[k + d * 128] = pallet.IndexOf(m);
                                                                                                                                        }
                                                                                                                                    }
@@ -776,8 +883,6 @@ namespace SonicImageParser
         public int[] lowPlane;
         public string[] pallet;
 
-        public int[] heightMap1;
-        public int[] heightMap2;
         public string[] heightIndexes;
         public int LevelWidth;
         public int LevelHeight;
@@ -786,17 +891,29 @@ namespace SonicImageParser
     {
         public int[] tilesPieces { get; set; }
         public int[] hLayer { get; set; }
+
+        public int[] heightMap1;
+        public int[] heightMap2;
+        public string[] angleMap1;
+        public string[] angleMap2;
+
         private Info inf;
         public void setInfo(Info info)
         {
             inf = info;
         }
         public TileChunk(int[] gm)
+            : this()
         {
             tilesPieces = gm;
         }
         public TileChunk()
         {
+            heightMap1 = new int[8 * 8];
+            heightMap2 = new int[8 * 8];
+
+            angleMap1 = new string[8 * 8];
+            angleMap2 = new string[8 * 8];
         }
 
         public bool Compare(int[] high)

@@ -11,7 +11,9 @@ namespace SonicImageParser
     {
         static void Main(string[] args)
         {
-            new ChunkConsumer();
+
+          //  new ChunkConsumer(@"B:\segastuff\Sonic3\Project\mushro\", "mush1chunks");
+            new ChunkConsumer(@"B:\segastuff\Sonic3\Project\casino1\", "casino1chunks");
 
 
 
