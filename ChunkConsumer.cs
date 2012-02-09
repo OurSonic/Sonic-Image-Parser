@@ -1,4 +1,4 @@
-﻿#define tga
+﻿//#define tga
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,6 +27,8 @@ namespace SonicImageParser
 
         public ChunkConsumer(string dir,string scr)
         {
+            GC.Collect();
+
 
             dir2 = dir;
             scriptName = scr;
@@ -40,6 +42,8 @@ namespace SonicImageParser
                 Console.WriteLine(file);
             }
 
+            GC.Collect();
+            return;
 #endif
 
             letters = new Bitmap[16];
@@ -344,7 +348,8 @@ namespace SonicImageParser
                                 {
                                     lineStarted = true;
                                     dff[x + 1] = (byte)(16 - y);
-                                    dff[0] = 0;
+                                    if(dff[0] != 2)
+                                        dff[0] = 0;
 
                                 }
                             }
@@ -762,7 +767,7 @@ namespace SonicImageParser
             XmlSerializer sl = new XmlSerializer(typeof(Info));
 
             FileStream cd;
-            sl.Serialize(cd = File.OpenWrite("b:\\" + scriptName + ".xml"), n);
+            sl.Serialize(cd = File.OpenWrite(@"B:\code\oursonic\" + scriptName + ".xml"), n);
             cd.Close();
 
 
@@ -770,7 +775,7 @@ namespace SonicImageParser
                 new System.Web.Script.Serialization.JavaScriptSerializer();
             oSerializer.MaxJsonLength *= 10;
             string sJSON = oSerializer.Serialize(n);
-            File.WriteAllText("b:\\" + scriptName + ".js", sJSON);
+            File.WriteAllText(@"B:\code\oursonic\" + scriptName + ".js", sJSON);
 
             cd.Close();
 

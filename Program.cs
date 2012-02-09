@@ -12,9 +12,19 @@ namespace SonicImageParser
         static void Main(string[] args)
         {
 
-          //  new ChunkConsumer(@"B:\segastuff\Sonic3\Project\mushro\", "mush1chunks");
-            new ChunkConsumer(@"B:\segastuff\Sonic3\Project\casino1\", "casino1chunks");
+            try
+            {
 
+                new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\mushroom1\", "mushroom1");
+                new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\mushroom2\", "mushroom2");
+                new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\casino1\", "casino1");
+                new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\casino2\", "casino2");
+            }
+            catch(Exception ex )
+            {
+                Console.Write(ex.ToString());
+                Console.ReadLine();
+            }
 
 
 
