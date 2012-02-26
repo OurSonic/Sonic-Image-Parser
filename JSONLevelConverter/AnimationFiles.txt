@@ -1,0 +1,190 @@
+﻿ArtUnc_AniAIZ1_0:		binclude "Levels/AIZ/Animated Tiles/Act1 0.bin"
+	even
+ArtUnc_AniAIZ1_1:		binclude "Levels/AIZ/Animated Tiles/Act1 1.bin"
+	even
+ArtUnc_AniAIZ2_1:		binclude "Levels/AIZ/Animated Tiles/Act2 1.bin"
+	even
+ArtUnc_AniAIZ2_0:		binclude "Levels/AIZ/Animated Tiles/Act2 0.bin"
+	even
+ArtUnc_AniAIZ2_3:		binclude "Levels/AIZ/Animated Tiles/Act2 3.bin"
+	even
+ArtUnc_AniAIZ2_2:		binclude "Levels/AIZ/Animated Tiles/Act2 2.bin"
+	even
+ArtUnc_AniAIZ2_FirstTree:		binclude "Levels/AIZ/Animated Tiles/Act2 First Tree.bin"
+	even
+ArtUnc_AniHCZ1_0:		binclude "Levels/HCZ/Animated Tiles/Act1 0.bin"
+	even
+ArtUnc_AniHCZ1_WaterlineBelow:		binclude "Levels/HCZ/Animated Tiles/Act1 Water Below 1.bin"
+	even
+ArtUnc_FixHCZ1_UpperBG1:		binclude "Levels/HCZ/Animated Tiles/Act1 Upper BG 1.bin"
+	even
+ArtUnc_AniHCZ1_WaterlineAbove:		binclude "Levels/HCZ/Animated Tiles/Act1 Water Above 1.bin"
+	even
+ArtUnc_FixHCZ1_LowerBG1:		binclude "Levels/HCZ/Animated Tiles/Act1 Lower BG 1.bin"
+	even
+ArtUnc_AniHCZ1_WaterlineBelow2:		binclude "Levels/HCZ/Animated Tiles/Act1 Water Below 2.bin"
+	even
+ArtUnc_FixHCZ1_UpperBG2:		binclude "Levels/HCZ/Animated Tiles/Act1 Upper BG 2.bin"
+	even
+ArtUnc_AniHCZ1_WaterlineAbove2:		binclude "Levels/HCZ/Animated Tiles/Act1 Water Above 2.bin"
+	even
+ArtUnc_FixHCZ1_LowerBG2:		binclude "Levels/HCZ/Animated Tiles/Act1 Lower BG 2.bin"
+	even
+ArtUnc_AniHCZ__1:		binclude "Levels/HCZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniHCZ2_0:		binclude "Levels/HCZ/Animated Tiles/Act2 0.bin"
+	even
+ArtUnc_AniHCZ2_SmallBGLine:		binclude "Levels/HCZ/Animated Tiles/Act2 1.bin"
+	even
+ArtUnc_AniHCZ2_2:		binclude "Levels/HCZ/Animated Tiles/Act2 2.bin"
+	even
+ArtUnc_AniHCZ2_3:		binclude "Levels/HCZ/Animated Tiles/Act2 3.bin"
+	even
+ArtUnc_AniHCZ2_4:		binclude "Levels/HCZ/Animated Tiles/Act2 4.bin"
+	even
+ArtUnc_AniMGZ__0:		binclude "Levels/MGZ/Animated Tiles/MGZ Animated 0.bin"
+	even
+ArtUnc_AniMGZ__1:		binclude "Levels/MGZ/Animated Tiles/MGZ Animated 1.bin"
+	even
+ArtUnc_AniCNZ__0:		binclude "Levels/CNZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniCNZ__1:		binclude "Levels/CNZ/Animated Tiles/1.bin"
+	even
+ArtUnc_AniCNZ__2:		binclude "Levels/CNZ/Animated Tiles/2.bin"
+	even
+ArtUnc_AniCNZ__3:		binclude "Levels/CNZ/Animated Tiles/3.bin"
+	even
+ArtUnc_AniCNZ__4:		binclude "Levels/CNZ/Animated Tiles/4.bin"
+	even
+ArtUnc_AniCNZ__6:		binclude "Levels/CNZ/Animated Tiles/6.bin"
+	even
+ArtUnc_AniCNZ__5:		binclude "Levels/CNZ/Animated Tiles/5.bin"
+	even
+ArtUnc_AniICZ__1:		binclude "Levels/ICZ/Animated Tiles/1.bin"
+	even
+ArtUnc_AniICZ__2:		binclude "Levels/ICZ/Animated Tiles/2.bin"
+	even
+ArtUnc_AniICZ__3:		binclude "Levels/ICZ/Animated Tiles/3.bin"
+	even
+ArtUnc_AniICZ__4:		binclude "Levels/ICZ/Animated Tiles/4.bin"
+	even
+ArtUnc_AniICZ__5:		binclude "Levels/ICZ/Animated Tiles/5.bin"
+	even
+ArtUnc_AniICZ__0:		binclude "Levels/ICZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniLBZ1_0:		binclude "Levels/LBZ/Animated Tiles/Act1 0.bin"
+	even
+ArtUnc_AniLBZ1_1:		binclude "Levels/LBZ/Animated Tiles/Act1 1.bin"
+	even
+ArtUnc_AniLBZ1_2:		binclude "Levels/LBZ/Animated Tiles/Act1 2.bin"
+	even
+ArtUnc_AniLBZ2_2:		binclude "Levels/LBZ/Animated Tiles/Act2 2.bin"
+	even
+ArtUnc_AniLBZ2_WaterlineBelow:		binclude "Levels/LBZ/Animated Tiles/Act2 Water Below.bin"
+	even
+ArtUnc_AniLBZ2_LowerBG:		binclude "Levels/LBZ/Animated Tiles/Act2 Lower BG.bin"
+	even
+ArtUnc_AniLBZ2_WaterlineAbove:		binclude "Levels/LBZ/Animated Tiles/Act2 Water Above.bin"
+	even
+ArtUnc_AniLBZ2_UpperBG:		binclude "Levels/LBZ/Animated Tiles/Act2 Upper BG.bin"
+	even
+ArtUnc_AniLBZ__0:		binclude "Levels/LBZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniLBZ2_0:		binclude "Levels/LBZ/Animated Tiles/Act2 0.bin"
+	even
+ArtUnc_AniLBZ2_1:		binclude "Levels/LBZ/Animated Tiles/Act2 1.bin"
+	even
+ArtUnc_AniALZ:		binclude "Levels/ALZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniBPZ__0:		binclude "Levels/BPZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniBPZ__1:		binclude "Levels/BPZ/Animated Tiles/1.bin"
+	even
+ArtUnc_AniBPZ__2:		binclude "Levels/BPZ/Animated Tiles/2.bin"
+	even
+ArtUnc_AniBPZ__3:		binclude "Levels/BPZ/Animated Tiles/3.bin"
+	even
+ArtUnc_AniDPZ:		binclude "Levels/DPZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniDPZ__BG:		binclude "Levels/DPZ/Animated Tiles/BG 0.bin"
+	even
+ArtUnc_AniGumball:		binclude "Levels/Gumball/Animated Tiles/0.bin"
+	evendf
+ArtUnc_AniPachinko:binclude "Levels/Pachinko/Animated Tiles/0.bin"
+	even
+ArtUnc_AniFBZ__0:	binclude "Levels/FBZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniFBZ__1:	binclude "Levels/FBZ/Animated Tiles/1.bin"
+	even
+ArtUnc_AniFBZ__2:	binclude "Levels/FBZ/Animated Tiles/2.bin"
+	even
+ArtUnc_AniFBZ__3:	binclude "Levels/FBZ/Animated Tiles/3.bin"
+	even
+ArtUnc_AniFBZ__4:	binclude "Levels/FBZ/Animated Tiles/4.bin"
+	even
+ArtUnc_AniMHZ__BG:	binclude "Levels/MHZ/Animated Tiles/BG 1.bin"
+	even
+ArtUnc_AniMHZ__BG2:	binclude "Levels/MHZ/Animated Tiles/BG 2.bin"
+	even
+ArtUnc_AniMHZ__0:	binclude "Levels/MHZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniMHZ__1:	binclude "Levels/MHZ/Animated Tiles/1.bin"
+	even
+ArtUnc_AniMHZ__2:	binclude "Levels/MHZ/Animated Tiles/2.bin"
+	even
+ArtUnc_AniMHZ__3:	binclude "Levels/MHZ/Animated Tiles/3.bin"
+	even
+ArtUnc_AniSOZ1_BG:	binclude "Levels/SOZ/Animated Tiles/Act1 BG 1.bin"
+	even
+ArtUnc_AniSOZ1_BG2:	binclude "Levels/SOZ/Animated Tiles/Act1 BG 2.bin"
+	even
+ArtUnc_AniSOZ2_BG:	binclude "Levels/SOZ/Animated Tiles/Act2 BG.bin"
+	even
+ArtUnc_AniLRZ__BG:	binclude "Levels/LRZ/Animated Tiles/BG 1.bin"
+	even
+ArtUnc_AniLRZ__BG2:	binclude "Levels/LRZ/Animated Tiles/BG 2.bin"
+	even
+ArtUnc_AniLRZ1_0:	binclude "Levels/LRZ/Animated Tiles/Act1 0.bin"
+	even
+ArtUnc_AniLRZ1_1:	binclude "Levels/LRZ/Animated Tiles/Act1 1.bin"
+	even
+ArtUnc_AniLRZ2_0:	binclude "Levels/LRZ/Animated Tiles/Act2 0.bin"
+	even
+ArtUnc_AniLRZ2_1:	binclude "Levels/LRZ/Animated Tiles/Act2 1.bin"
+	even
+ArtUnc_AniHPZ__0:	binclude "Levels/HPZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniHPZ__1:	binclude "Levels/HPZ/Animated Tiles/1.bin"
+	even
+ArtUnc_AniHPZ__2:	binclude "Levels/HPZ/Animated Tiles/2.bin"
+	even
+ArtUnc_AniHPZ__3:	binclude "Levels/HPZ/Animated Tiles/3.bin"
+	even
+ArtUnc_AniSSZ__0:	binclude "Levels/SSZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniSSZ__1:	binclude "Levels/SSZ/Animated Tiles/1.bin"
+	even
+ArtUnc_AniSSZ__2:	binclude "Levels/SSZ/Animated Tiles/2.bin"
+	even
+ArtUnc_AniSSZ__3:	binclude "Levels/SSZ/Animated Tiles/3.bin"
+	even
+ArtUnc_AniSSZ__4:	binclude "Levels/SSZ/Animated Tiles/4.bin"
+	even
+ArtUnc_AniSSZ__5:	binclude "Levels/SSZ/Animated Tiles/5.bin"
+	even
+ArtUnc_AniDEZ__0:	binclude "Levels/DEZ/Animated Tiles/0.bin"
+	even
+ArtUnc_AniDEZ__1:	binclude "Levels/DEZ/Animated Tiles/1.bin"
+	even
+ArtUnc_AniDEZ__2:	binclude "Levels/DEZ/Animated Tiles/2.bin"
+	even
+ArtUnc_AniDEZ__3:	binclude "Levels/DEZ/Animated Tiles/3.bin"
+	even
+ArtUnc_AniDEZ__4:	binclude "Levels/DEZ/Animated Tiles/4.bin"
+	even
+ArtUnc_AniDEZ__5:	binclude "Levels/DEZ/Animated Tiles/5.bin"
+	even
+ArtUnc_AniDEZ__6:	binclude "Levels/DEZ/Animated Tiles/6.bin"
+	even
+ArtUnc_AniDEZ__7:	binclude "Levels/DEZ/Animated Tiles/7.bin"
+	even

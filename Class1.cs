@@ -13,4 +13,19 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Script.Serialization;
 
+ public static class    Help
+ {
+     public static T[][] init2D<T>(int i, int i1)
+     {
+
+         T[][] j = new T[i][];
+
+         for (int k = 0; k < i1; k++)
+         {
+             j[k] = new T[i1];
+         }
+         return j;
+     }
+    
  
+ }

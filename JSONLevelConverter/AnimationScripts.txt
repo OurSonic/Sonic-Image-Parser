@@ -1,0 +1,676 @@
+﻿AniPLC_AIZ1:	dc.w 2
+		dc.l ArtUnc_AniAIZ1_0-$1000000
+		dc.w $5CC0
+		dc.b 9
+		dc.b $C
+		dc.b  $3C, $4F
+		dc.b  $30,   5
+		dc.b  $18,   5
+		dc.b   $C,   5
+		dc.b	0, $4F
+		dc.b   $C,   3
+		dc.b  $18,   3
+		dc.b  $24,   1
+		dc.b  $30,   1
+		dc.l ArtUnc_AniAIZ1_0-$1000000
+		dc.w $5E40
+		dc.b 8
+		dc.b $C
+		dc.b  $18,   5
+		dc.b  $24,   5
+		dc.b  $30,   5
+		dc.b  $3C, $27
+		dc.b	0,   5
+		dc.b   $C,   5
+		dc.b  $18,   5
+		dc.b  $24,   5
+		dc.l ArtUnc_AniAIZ1_1-$1000000
+		dc.w $5FC0
+		dc.b 8
+		dc.b 6
+		dc.b	0,   7
+		dc.b	6,   3
+		dc.b   $C,   3
+		dc.b  $12,   3
+		dc.b  $18,   7
+		dc.b  $12,   3
+		dc.b   $C,   3
+		dc.b	6,   3
+AniPLC_AIZ2:	dc.w 4
+		dc.l ArtUnc_AniAIZ2_0+$3000000
+		dc.w $1660
+		dc.b 4
+		dc.b $17
+		dc.b	0, $17
+		dc.b  $2E, $45
+		dc.l ArtUnc_AniAIZ2_1-$1000000
+		dc.w $1940
+		dc.b 9
+		dc.b $C
+		dc.b  $3C, $4F
+		dc.b  $30,   5
+		dc.b  $18,   5
+		dc.b   $C,   5
+		dc.b	0, $4F
+		dc.b   $C,   3
+		dc.b  $18,   3
+		dc.b  $24,   1
+		dc.b  $30,   1
+		dc.l ArtUnc_AniAIZ2_1-$1000000
+		dc.w $1AC0
+		dc.b 8
+		dc.b $C
+		dc.b  $18,   5
+		dc.b  $24,   5
+		dc.b  $30,   5
+		dc.b  $3C, $27
+		dc.b	0,   5
+		dc.b   $C,   5
+		dc.b  $18,   5
+		dc.b  $24,   5
+		dc.l ArtUnc_AniAIZ2_2+$3000000
+		dc.w $1C40
+		dc.b 4
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.l ArtUnc_AniAIZ2_3+$3000000
+		dc.w $1CC0
+		dc.b 4
+		dc.b $18
+		dc.b	0, $18
+		dc.b  $30, $48
+AniPLC_HCZ1:	dc.w 1
+		dc.l ArtUnc_AniHCZ1_0-$1000000
+		dc.w $6180
+		dc.b 3
+		dc.b $24
+		dc.b	0,   2
+		dc.b  $24,   1
+		dc.b  $48,   2
+		dc.l ArtUnc_AniHCZ__1-$1000000
+		dc.w $22A0
+		dc.b $10
+		dc.b 6
+		dc.b	0,   4
+		dc.b	6,   3
+		dc.b   $C,   2
+		dc.b  $12,   1
+		dc.b  $18,   0
+		dc.b  $1E,   1
+		dc.b  $24,   2
+		dc.b  $2A,   3
+		dc.b  $30,   4
+		dc.b  $2A,   3
+		dc.b  $24,   2
+		dc.b  $1E,   1
+		dc.b  $18,   0
+		dc.b  $12,   1
+		dc.b   $C,   2
+		dc.b	6,   3
+AniPLC_HCZ2:	dc.w 1
+		dc.l ArtUnc_AniHCZ2_0+$3000000
+		dc.w $4BC0
+		dc.b 4
+		dc.b $15
+		dc.b	0, $15
+		dc.b  $2A, $3F
+		dc.l ArtUnc_AniHCZ__1-$1000000
+		dc.w $22A0
+		dc.b $10
+		dc.b 6
+		dc.b	0,   4
+		dc.b	6,   3
+		dc.b   $C,   2
+		dc.b  $12,   1
+		dc.b  $18,   0
+		dc.b  $1E,   1
+		dc.b  $24,   2
+		dc.b  $2A,   3
+		dc.b  $30,   4
+		dc.b  $2A,   3
+		dc.b  $24,   2
+		dc.b  $1E,   1
+		dc.b  $18,   0
+		dc.b  $12,   1
+		dc.b   $C,   2
+		dc.b	6,   3
+AniPLC_MGZ:	dc.w 1
+		dc.l ArtUnc_AniMGZ__0+$9000000
+		dc.w $4440
+		dc.b 6
+		dc.b $30
+		dc.b	0, $30
+		dc.b  $60, $90
+		dc.b  $C0, $F0
+		dc.l ArtUnc_AniMGZ__1-$1000000
+		dc.w $4A40
+		dc.b 4
+		dc.b 1
+		dc.b	0,   7
+		dc.b	1,  $E
+		dc.b	2,   7
+		dc.b	1,  $E
+AniPLC_CNZ:	dc.w 6
+		dc.l ArtUnc_AniCNZ__0+$3000000
+		dc.w $5640
+		dc.b $10
+		dc.b 9
+		dc.b	0, $12
+		dc.b  $24, $36
+		dc.b  $48, $5A
+		dc.b  $6C, $7E
+		dc.b	9, $1B
+		dc.b  $2D, $3F
+		dc.b  $51, $63
+		dc.b  $75, $87
+		dc.l ArtUnc_AniCNZ__0+$3000000
+		dc.w $5760
+		dc.b $10
+		dc.b 9
+		dc.b	9, $1B
+		dc.b  $2D, $3F
+		dc.b  $51, $63
+		dc.b  $75, $87
+		dc.b	0, $12
+		dc.b  $24, $36
+		dc.b  $48, $5A
+		dc.b  $6C, $7E
+		dc.l ArtUnc_AniCNZ__1+$3000000
+		dc.w $5880
+		dc.b $10
+		dc.b $10
+		dc.b	0, $10
+		dc.b  $20, $30
+		dc.b  $40, $50
+		dc.b  $60, $70
+		dc.b  $80, $90
+		dc.b  $A0, $B0
+		dc.b  $C0, $D0
+		dc.b  $E0, $F0
+		dc.l ArtUnc_AniCNZ__2+$3000000
+		dc.w $5A80
+		dc.b 8
+		dc.b $20
+		dc.b	0, $20
+		dc.b  $40, $60
+		dc.b  $80, $A0
+		dc.b  $C0, $E0
+		dc.l ArtUnc_AniCNZ__3+$3000000
+		dc.w $5E80
+		dc.b 8
+		dc.b $10
+		dc.b	0, $10
+		dc.b  $20, $30
+		dc.b  $40, $50
+		dc.b  $60, $70
+		dc.l ArtUnc_AniCNZ__4+$3000000
+		dc.w $6080
+		dc.b 6
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,   0
+		dc.b	4,   8
+		dc.l ArtUnc_AniCNZ__5+$1000000
+		dc.w $6500
+		dc.b 4
+		dc.b $14
+		dc.b	0, $14
+		dc.b  $28, $3C
+AniPLC_FBZ1:	dc.w 4
+		dc.l ArtUnc_AniFBZ__0+$3F000000
+		dc.w $4200
+		dc.b 2
+		dc.b $20
+		dc.b   0 ;
+		dc.b   0 ;
+		dc.l ArtUnc_AniFBZ__1+$7000000
+		dc.w $4600
+		dc.b 6
+		dc.b 8
+		dc.b	0,   8
+		dc.b  $10,   0
+		dc.b	8, $10
+		dc.l ArtUnc_AniFBZ__2+$1000000
+		dc.w $4700
+		dc.b 8
+		dc.b $10
+		dc.b	0, $10
+		dc.b  $20, $30
+		dc.b  $40, $50
+		dc.b  $60, $70
+		dc.l ArtUnc_AniFBZ__3+$7000000
+		dc.w $4000
+		dc.b 2
+		dc.b 8
+		dc.b	0,   8
+		dc.l ArtUnc_AniFBZ__4+$7000000
+		dc.w $4100
+		dc.b 6
+		dc.b 8
+		dc.b	0,   8
+		dc.b  $10,   0
+		dc.b	8, $10
+AniPLC_FBZ2:	dc.w 4
+		dc.l ArtUnc_AniFBZ__0+$1000000
+		dc.w $4200
+		dc.b 8
+		dc.b $20
+		dc.b	0, $20
+		dc.b  $40, $60
+		dc.b  $80, $A0
+		dc.b  $C0, $E0
+		dc.l ArtUnc_AniFBZ__1+$7000000
+		dc.w $4600
+		dc.b 6
+		dc.b 8
+		dc.b	0,   8
+		dc.b  $10,   0
+		dc.b	8, $10
+		dc.l ArtUnc_AniFBZ__2+$1000000
+		dc.w $4700
+		dc.b 8
+		dc.b $10
+		dc.b	0, $10
+		dc.b  $20, $30
+		dc.b  $40, $50
+		dc.b  $60, $70
+		dc.l ArtUnc_AniFBZ__3+$7000000
+		dc.w $4000
+		dc.b 2
+		dc.b 8
+		dc.b	0,   8
+		dc.l ArtUnc_AniFBZ__4+$7000000
+		dc.w $4100
+		dc.b 6
+		dc.b 8
+		dc.b	0,   8
+		dc.b  $10,   0
+		dc.b	8, $10
+AniPLC_ICZ:	dc.w 0
+		dc.l ArtUnc_AniICZ__0+$3000000
+		dc.w $23C0
+		dc.b 8
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.b  $10, $14
+		dc.b  $18, $1C
+AniPLC_LBZ1:	dc.w 0
+		dc.l ArtUnc_AniLBZ1_0+$2000000
+		dc.w $6CA0
+		dc.b 4
+		dc.b 8
+		dc.b	0,   8
+		dc.b  $10, $18 
+		dc.l ArtUnc_AniLBZ2_0+$7000000
+		dc.w $2E00
+		dc.b 4
+		dc.b 5
+		dc.b	0,   5
+		dc.b   $A,  $F
+		dc.l ArtUnc_AniLBZ2_1+$7000000
+		dc.w $2EA0
+		dc.b 6
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.b  $10, $14
+AniPLC_LBZ2:	dc.w 1
+		dc.l ArtUnc_AniLBZ2_0+$7000000
+		dc.w $2E00
+		dc.b 4
+		dc.b 5
+		dc.b	0,   5
+		dc.b   $A,  $F
+		dc.l ArtUnc_AniLBZ2_1+$7000000
+		dc.w $2EA0
+		dc.b 6
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.b  $10, $14
+		dc.l ArtUnc_AniLBZ2_0+$7000000
+		dc.w $2E00
+		dc.b 4
+		dc.b 5
+		dc.b	0,   5
+		dc.b   $A,  $F
+		dc.l ArtUnc_AniLBZ2_1+$7000000
+		dc.w $2EA0
+		dc.b 6
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.b  $10, $14
+AniPLC_MHZ:	dc.w 3
+		dc.l ArtUnc_AniMHZ__0-$1000000
+		dc.w $4A0
+		dc.b $14
+		dc.b 4
+		dc.b	0, $18
+		dc.b	4,   0
+		dc.b	0,   0
+		dc.b	4,   0
+		dc.b	8,   0
+		dc.b	4,   0
+		dc.b	8,   0
+		dc.b   $C,   0
+		dc.b	8,   0
+		dc.b   $C,   0
+		dc.b	8,   0
+		dc.b   $C,   0
+		dc.b  $10,   0
+		dc.b   $C,   0
+		dc.b  $10,   0
+		dc.b  $14,   0
+		dc.b  $10,   0
+		dc.b  $14, $31
+		dc.b	0,   0
+		dc.b  $14,   0
+		dc.l ArtUnc_AniMHZ__1-$1000000
+		dc.w $320
+		dc.b $C
+		dc.b 4
+		dc.b	0, $1D
+		dc.b	4,   0
+		dc.b	0,   0
+		dc.b	4,   0
+		dc.b	0,   0
+		dc.b	4,   0
+		dc.b	0,   0
+		dc.b	4,   1
+		dc.b	8, $1D
+		dc.b   $C,   4
+		dc.b  $10,   4
+		dc.b  $14,   4
+		dc.l ArtUnc_AniMHZ__2-$1000000
+		dc.w $BA0
+		dc.b 8
+		dc.b 8
+		dc.b	0,   4
+		dc.b	8,   4
+		dc.b  $10,   6
+		dc.b	8,   4
+		dc.b	0,   4
+		dc.b  $18,   4
+		dc.b  $20,   6
+		dc.b  $18,   4
+		dc.l ArtUnc_AniMHZ__3-$1000000
+		dc.w $3A0
+		dc.b 8
+		dc.b 8
+		dc.b  $10,   6
+		dc.b	8,   4
+		dc.b	0,   4
+		dc.b  $18,   4
+		dc.b  $20,   6
+		dc.b  $18,   4
+		dc.b	0,   4
+		dc.b	8,   4
+AniPLC_LRZ1:	dc.w 1
+		dc.l ArtUnc_AniLRZ1_0+$5000000
+		dc.w $6A80
+		dc.b 4
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.l ArtUnc_AniLRZ1_1+$5000000
+		dc.w $6A00
+		dc.b 4
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+AniPLC_LRZ2:	dc.w 1
+		dc.l ArtUnc_AniLRZ2_0-$1000000
+		dc.w $6B00
+		dc.b 3
+		dc.b 6
+		dc.b	0,   2
+		dc.b	6,   2
+		dc.b   $C,   1
+		dc.l ArtUnc_AniLRZ2_1+$1000000
+		dc.w $6A00
+		dc.b 8
+		dc.b 8
+		dc.b	0, $38
+		dc.b  $30, $28
+		dc.b  $20, $18
+		dc.b  $10,   8
+AniPLC_SSZ:	dc.w 5
+		dc.l ArtUnc_AniSSZ__0+$7000000
+		dc.w $3E60
+		dc.b 4
+		dc.b $24
+		dc.b	0, $24
+		dc.b  $48, $6C
+		dc.l ArtUnc_AniSSZ__1+$7000000
+		dc.w $42E0
+		dc.b 4
+		dc.b 8
+		dc.b	0,   8
+		dc.b  $10, $18
+		dc.l ArtUnc_AniSSZ__2+$7000000
+		dc.w $43E0
+		dc.b 3
+		dc.b 8
+		dc.b	0,   8
+		dc.b  $10, $18
+		dc.l ArtUnc_AniSSZ__3+$2000000
+		dc.w $3B20
+		dc.b 4
+		dc.b 9
+		dc.b	0,   9
+		dc.b  $12, $1B
+		dc.l ArtUnc_AniSSZ__4+$2000000
+		dc.w $3C40
+		dc.b 4
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.l ArtUnc_AniSSZ__5+$2000000
+		dc.w $3CC0
+		dc.b 4
+		dc.b $D
+		dc.b	0,  $D
+		dc.b  $1A, $27
+AniPLC_DEZ:	dc.w 7
+		dc.l ArtUnc_AniDEZ__0
+		dc.w $1C80
+		dc.b 2
+		dc.b 2
+		dc.b	0,   2
+		dc.l ArtUnc_AniDEZ__1+$1000000
+		dc.w $3E80
+		dc.b 6
+		dc.b $1E
+		dc.b	0, $1E
+		dc.b  $3C,   0
+		dc.b  $1E, $3C
+		dc.l ArtUnc_AniDEZ__2+$3000000
+		dc.w $1D80
+		dc.b 8
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.b  $10, $14
+		dc.b  $18, $1C
+		dc.l ArtUnc_AniDEZ__3-$1000000
+		dc.w $BE0
+		dc.b 4
+		dc.b 6
+		dc.b	0,   9
+		dc.b	6,   4
+		dc.b   $C,   9
+		dc.b	6,   4
+		dc.l ArtUnc_AniDEZ__4+$4000000
+		dc.w $960
+		dc.b 4
+		dc.b 2
+		dc.b	0,   2
+		dc.b	4,   2
+		dc.l ArtUnc_AniDEZ__5+$4000000
+		dc.w $D60
+		dc.b 6
+		dc.b 3
+		dc.b	0,   3
+		dc.b	6,   0
+		dc.b	3,   6
+		dc.l ArtUnc_AniDEZ__6+$1000000
+		dc.w $500
+		dc.b 2
+		dc.b 8
+		dc.b	0,   8
+		dc.l ArtUnc_AniDEZ__7
+		dc.w $4DA0
+		dc.b $84
+		dc.b 5
+		dc.b	0, $2D
+		dc.b	0, $2D
+		dc.b	0, $2D
+		dc.b	0, $2D
+		dc.b	0, $2D
+		dc.b	0, $2D
+		dc.b	5, $2D
+		dc.b	5, $2D
+		dc.b	5, $2D
+		dc.b	5, $2D
+		dc.b	5, $2D
+		dc.b	5, $2D
+		dc.b   $A, $2D
+		dc.b   $A, $2D
+		dc.b   $A, $2D
+		dc.b   $A, $2D
+		dc.b   $A, $2D
+		dc.b   $A, $2D
+		dc.b   $F, $2D
+		dc.b   $F, $2D
+		dc.b   $F, $2D
+		dc.b   $F, $2D
+		dc.b   $F, $2D
+		dc.b   $F, $2D
+		dc.b  $14, $2D
+		dc.b  $14, $2D
+		dc.b  $14, $2D
+		dc.b  $14, $2D
+		dc.b  $14, $2D
+		dc.b  $14, $2D
+		dc.b  $19, $2D
+		dc.b  $19, $2D
+		dc.b  $19, $2D
+		dc.b  $19, $2D
+		dc.b  $19, $2D
+		dc.b  $19, $2D
+		dc.b  $1E, $2D
+		dc.b  $1E, $2D
+		dc.b  $1E, $2D
+		dc.b  $1E, $2D
+		dc.b  $1E, $2D
+		dc.b  $1E, $2D
+		dc.b  $23, $2D
+		dc.b  $23, $2D
+		dc.b  $23, $2D
+		dc.b  $23, $2D
+		dc.b  $23, $2D
+		dc.b  $23, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+		dc.b  $28, $2D
+AniPLC_ALZ:	dc.w 0
+		dc.l ArtUnc_AniALZ+$9000000
+		dc.w $4700
+		dc.b 3
+		dc.b $10
+		dc.b	0, $10
+		dc.b  $20,   0
+AniPLC_BPZ:	dc.w 3
+		dc.l ArtUnc_AniBPZ__0+$7000000
+		dc.w $2300
+		dc.b 6
+		dc.b 7
+		dc.b	0,   7
+		dc.b   $E, $15
+		dc.b  $1C, $23
+		dc.l ArtUnc_AniBPZ__1+$5000000
+		dc.w $23E0
+		dc.b $A
+		dc.b 8
+		dc.b	0,   8
+		dc.b  $10, $18
+		dc.b  $20,   0
+		dc.b	8, $10
+		dc.b  $18, $20
+		dc.l ArtUnc_AniBPZ__2+$2000000
+		dc.w $24E0
+		dc.b 2
+		dc.b 3
+		dc.b	0,   3
+		dc.l ArtUnc_AniBPZ__3+$4000000
+		dc.w $2540
+		dc.b 2
+		dc.b 1
+		dc.b	0,   1
+AniPLC_DPZ:	dc.w 0
+		dc.l ArtUnc_AniDPZ+$B000000
+		dc.w $28E0
+		dc.b 5
+		dc.b $C
+		dc.b	0,  $C
+		dc.b  $18, $24
+		dc.b  $30,   0
+AniPLC_Pachinko:dc.w 0
+		dc.l ArtUnc_AniPachinko
+		dc.w $24A0
+		dc.b 8
+		dc.b $26
+		dc.b  $26,   0
+		dc.b  $4C,   0
+		dc.b  $72,   0
+		dc.b  $98,   0
+AniPLC_NULL:	dc.w $FFFF
+AniPLC_HPZ:	dc.w 3
+		dc.l ArtUnc_AniHPZ__0+$2000000
+		dc.w $5A00
+		dc.b 8
+		dc.b 3
+		dc.b	0,   3
+		dc.b	6,   9
+		dc.b   $C,  $F
+		dc.b  $12, $15
+		dc.l ArtUnc_AniHPZ__1+$3000000
+		dc.w $5A60
+		dc.b 6
+		dc.b 2
+		dc.b	0,   2
+		dc.b	4,   6
+		dc.b	8,  $A
+		dc.l ArtUnc_AniHPZ__2+$2000000
+		dc.w $5AA0
+		dc.b 8
+		dc.b 4
+		dc.b	0,   4
+		dc.b	8,  $C
+		dc.b  $10, $14
+		dc.b  $18, $1C
+		dc.l ArtUnc_AniHPZ__3+$3000000
+		dc.w $5B20
+		dc.b 6
+		dc.b 3
+		dc.b	0,   3
+		dc.b	6,   9
+		dc.b   $C,  $F

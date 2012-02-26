@@ -12,19 +12,35 @@ namespace SonicImageParser
         static void Main(string[] args)
         {
 
-            try
+            StringBuilder sb=new StringBuilder();
+            foreach (var fileInfo in new DirectoryInfo(@"B:\code\oursonic\javascript\").GetFiles("*.js"))
             {
+                if (fileInfo.Name.Equals("curCompress.js")) continue;
+                sb.AppendLine(File.ReadAllText(fileInfo.FullName));
+            }
+            Yahoo.Yui.Compressor.JavaScriptCompressor j = new Yahoo.Yui.Compressor.JavaScriptCompressor(sb.ToString());
+            File.WriteAllText(@"B:\code\oursonic\javascript\curCompress.js",j.Compress());
+            
 
-                new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\mushroom1\", "mushroom1");
-                new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\mushroom2\", "mushroom2");
-                new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\casino1\", "casino1");
-                new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\casino2\", "casino2");
-            }
-            catch(Exception ex )
-            {
-                Console.Write(ex.ToString());
-                Console.ReadLine();
-            }
+//            try
+//            {
+
+         // new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\mushroom1\", "mushroom1");
+       //     new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\mushroom2\", "mushroom2");
+         //   new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\casino1\", "casino1");
+          //  new ChunkConsumer(@"B:\segastuff\Sonic3\Project\levels\casino2\", "casino2");
+           // new ChunkConsumer(@"B:\segastuff\Sonic2\project\levels\emerald1\", "s2emerald1");
+                
+
+
+
+//            }
+//
+//            catch(Exception ex )
+//            {
+//                Console.Write(ex.ToString());
+//                Console.ReadLine();
+//            }
 
 
 
