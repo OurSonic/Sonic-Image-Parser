@@ -18,8 +18,8 @@ namespace SonicImageParser
                 if (fileInfo.Name.Equals("curCompress.js")) continue;
                 sb.AppendLine(File.ReadAllText(fileInfo.FullName));
             }
-            Yahoo.Yui.Compressor.JavaScriptCompressor j = new Yahoo.Yui.Compressor.JavaScriptCompressor(sb.ToString());
-            File.WriteAllText(@"B:\code\oursonic\javascript\curCompress.js",j.Compress());
+            ////Yahoo.Yui.Compressor.JavaScriptCompressor j = new Yahoo.Yui.Compressor.JavaScriptCompressor(sb.ToString());
+            ////File.WriteAllText(@"B:\code\oursonic\javascript\curCompress.js",j.Compress());
             
 
 //            try

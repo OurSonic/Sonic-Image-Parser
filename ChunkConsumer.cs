@@ -812,20 +812,7 @@ namespace SonicImageParser
             }
             output.Flush();
         }
-        public static byte[] compressFile(string inFile)
-        {
-            string _data = inFile;
-
-            byte[] byteArray = Encoding.ASCII.GetBytes(_data);
-
-            MemoryStream _st = new MemoryStream(byteArray);
-
-            var d = new SharpLZW.LZWEncoder();
-            return d.EncodeToByteList(inFile);
-
-
-        }
-
+       
 
 
 

@@ -14,7 +14,7 @@ namespace JSONLevelConverter
         public MainForm()
         {
             InitializeComponent();
-            this.fileSelector1.FileName = @"B:\segastuff\ss\Sonic 3K SVN INIs\S3KLVL.ini";
+            this.fileSelector1.FileName = pre+@"Sonic 3K SVN INIs\S3KLVL.ini";
             fileSelector1_FileNameChanged(this.fileSelector1, null);
             button1.Enabled = true;
             button2.Enabled = true;
@@ -25,10 +25,12 @@ namespace JSONLevelConverter
         private Dictionary<string, Dictionary<string, string>> ini;
         string Dir = Environment.CurrentDirectory;
         private Dictionary<string, byte[][]> AnimationFiles = new Dictionary<string, byte[][]>();
+        private static string pre = Directory.GetCurrentDirectory() + "/../../../Data/";
+        private static string presk { get { return pre + "Sonic 3K SVN INIs/Build Scipts/"; } }
+
         public void getFiles()
         {
-            var lines = File.ReadAllLines(@"B:\segastuff\ssss\JSONLevelConverter\JSONLevelConverter\AnimationFiles.txt");
-
+            var lines = File.ReadAllLines(pre + "AnimationFiles.txt");
             int lineIndex = 0;
 
             foreach (var line in lines)
@@ -38,9 +40,9 @@ namespace JSONLevelConverter
                     //ArtUnc_AniAIZ1_0:		binclude "Levels/AIZ/Animated Tiles/Act1 0.bin"
                     var f = line.Replace("\t", "").Replace("binclude ", "").Replace("\"", "").Split(':');
 
-                    if (File.Exists(f[1]))
+                    if (File.Exists(pre + f[1]))
                     {
-                        var tmp = Compression.Decompress(f[1], Compression.CompressionType.Uncompressed);
+                        var tmp = Compression.Decompress(pre+ f[1], Compression.CompressionType.Uncompressed);
                         List<byte[]> tiles = new List<byte[]>(tmp.Length / 32);
 
                         var m = new byte[tmp.Length / 32][];
@@ -58,7 +60,7 @@ namespace JSONLevelConverter
 
 
 
-            var vlines = File.ReadAllLines(@"B:\segastuff\ssss\JSONLevelConverter\JSONLevelConverter\AnimationScripts.txt");
+            var vlines = File.ReadAllLines(pre + "AnimationScripts.txt");
 
              animations=new Dictionary<string, Tuple<List<string>,List<Animation>>>();
 
@@ -315,9 +317,9 @@ namespace JSONLevelConverter
                         else
                             off = int.Parse(offstr, System.Globalization.NumberStyles.Integer);
                     }
-                    if (File.Exists(tileentsp[0]))
+                    if (File.Exists(presk+tileentsp[0]))
                     {
-                        tmp = Compression.Decompress(tileentsp[0], LevelData.TileCmp);
+                        tmp = Compression.Decompress(presk + tileentsp[0], LevelData.TileCmp);
                         List<byte[]> tiles = new List<byte[]>();
                         for (int i = 0; i < tmp.Length; i += 32)
                         {
@@ -334,9 +336,9 @@ namespace JSONLevelConverter
             else
             {
                 LevelData.TileCmp = Compression.CompressionType.SZDD;
-                if (File.Exists(gr["tile8"]))
+                if (File.Exists(presk+gr["tile8"]))
                 {
-                    tmp = Compression.Decompress(gr["tile8"], Compression.CompressionType.SZDD);
+                    tmp = Compression.Decompress(presk+gr["tile8"], Compression.CompressionType.SZDD);
                     int sta = ByteConverter.ToInt32(tmp, 0xC);
                     int numt = ByteConverter.ToInt32(tmp, 8);
                     List<byte[]> tiles = new List<byte[]>();
@@ -385,9 +387,9 @@ namespace JSONLevelConverter
                     else
                         off = int.Parse(offstr, System.Globalization.NumberStyles.Integer);
                 }
-                if (File.Exists(tileentsp[0]))
+                if (File.Exists(presk + tileentsp[0]))
                 {
-                    tmp = Compression.Decompress(tileentsp[0], LevelData.BlockCmp);
+                    tmp = Compression.Decompress(presk+tileentsp[0], LevelData.BlockCmp);
                     List<Block> tmpblk = new List<Block>();
                     if (LevelData.EngineVersion == EngineVersion.SKC)
                         LevelData.littleendian = false;
@@ -436,9 +438,9 @@ namespace JSONLevelConverter
                     else
                         off = int.Parse(offstr, System.Globalization.NumberStyles.Integer);
                 }
-                if (File.Exists(tileentsp[0]))
+                if (File.Exists(presk + tileentsp[0]))
                 {
-                    tmp = Compression.Decompress(tileentsp[0], LevelData.ChunkCmp);
+                    tmp = Compression.Decompress(presk+tileentsp[0], LevelData.ChunkCmp);
                     tmpchnk = new List<Chunk>();
                     if (fileind == 0)
                     {
@@ -490,9 +492,9 @@ namespace JSONLevelConverter
                 case EngineVersion.S1:
                     int s1xmax = int.Parse(ini[string.Empty]["levelwidthmax"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
                     int s1ymax = int.Parse(ini[string.Empty]["levelheightmax"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-                    if (File.Exists(gr["fglayout"]))
+                    if (File.Exists(presk + gr["fglayout"]))
                     {
-                        tmp = Compression.Decompress(gr["fglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["fglayout"], LevelData.LayoutCmp);
                         fgw = (ushort)(tmp[0] + 1);
                         fgh = (ushort)(tmp[1] + 1);
                         LevelData.FGLayout = new byte[fgw, fgh];
@@ -510,9 +512,9 @@ namespace JSONLevelConverter
                         LevelData.FGLayout = new byte[s1xmax, s1ymax];
                         LevelData.FGLoop = new bool[s1xmax, s1ymax];
                     }
-                    if (File.Exists(gr["bglayout"]))
+                    if (File.Exists(presk + gr["bglayout"]))
                     {
-                        tmp = Compression.Decompress(gr["bglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["bglayout"], LevelData.LayoutCmp);
                         bgw = (ushort)(tmp[0] + 1);
                         bgh = (ushort)(tmp[1] + 1);
                         LevelData.BGLayout = new byte[bgw, bgh];
@@ -533,9 +535,9 @@ namespace JSONLevelConverter
                 case EngineVersion.S2NA:
                     s1xmax = int.Parse(ini[string.Empty]["levelwidthmax"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
                     s1ymax = int.Parse(ini[string.Empty]["levelheightmax"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-                    if (File.Exists(gr["fglayout"]))
+                    if (File.Exists(presk + gr["fglayout"]))
                     {
-                        tmp = Compression.Decompress(gr["fglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["fglayout"], LevelData.LayoutCmp);
                         fgw = (ushort)(tmp[0] + 1);
                         fgh = (ushort)(tmp[1] + 1);
                         LevelData.FGLayout = new byte[fgw, fgh];
@@ -548,9 +550,9 @@ namespace JSONLevelConverter
                     }
                     else
                         LevelData.FGLayout = new byte[s1xmax, s1ymax];
-                    if (File.Exists(gr["bglayout"]))
+                    if (File.Exists(presk + gr["bglayout"]))
                     {
-                        tmp = Compression.Decompress(gr["bglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["bglayout"], LevelData.LayoutCmp);
                         bgw = (ushort)(tmp[0] + 1);
                         bgh = (ushort)(tmp[1] + 1);
                         LevelData.BGLayout = new byte[bgw, bgh];
@@ -566,9 +568,9 @@ namespace JSONLevelConverter
                 case EngineVersion.S2:
                     LevelData.FGLayout = new byte[128, 16];
                     LevelData.BGLayout = new byte[128, 16];
-                    if (File.Exists(gr["layout"]))
+                    if (File.Exists(presk + gr["layout"]))
                     {
-                        tmp = Compression.Decompress(gr["layout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["layout"], LevelData.LayoutCmp);
                         for (int la = 0; la < tmp.Length; la += 256)
                         {
                             for (int laf = 0; laf < 128; laf++)
@@ -579,9 +581,9 @@ namespace JSONLevelConverter
                     }
                     break;
                 case EngineVersion.S3K:
-                    if (File.Exists(gr["layout"]))
+                    if (File.Exists(presk + gr["layout"]))
                     {
-                        tmp = Compression.Decompress(gr["layout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["layout"], LevelData.LayoutCmp);
                         fgw = ByteConverter.ToUInt16(tmp, 0);
                         bgw = ByteConverter.ToUInt16(tmp, 2);
                         fgh = ByteConverter.ToUInt16(tmp, 4);
@@ -607,9 +609,9 @@ namespace JSONLevelConverter
                     }
                     break;
                 case EngineVersion.SKC:
-                    if (File.Exists(gr["layout"]))
+                    if (File.Exists(presk + gr["layout"]))
                     {
-                        tmp = Compression.Decompress(gr["layout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["layout"], LevelData.LayoutCmp);
                         fgw = ByteConverter.ToUInt16(tmp, 0);
                         bgw = ByteConverter.ToUInt16(tmp, 2);
                         fgh = ByteConverter.ToUInt16(tmp, 4);
@@ -636,9 +638,9 @@ namespace JSONLevelConverter
                     break;
                 case EngineVersion.SCDPC:
                     LevelData.FGLayout = new byte[64, 8];
-                    if (File.Exists(gr["fglayout"]))
+                    if (File.Exists(presk + gr["fglayout"]))
                     {
-                        tmp = Compression.Decompress(gr["fglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["fglayout"], LevelData.LayoutCmp);
                         for (int lr = 0; lr < 8; lr++)
                             for (int lc = 0; lc < 64; lc++)
                             {
@@ -647,9 +649,9 @@ namespace JSONLevelConverter
                             }
                     }
                     LevelData.BGLayout = new byte[64, 8];
-                    if (File.Exists(gr["bglayout"]))
+                    if (File.Exists(presk + gr["bglayout"]))
                     {
-                        tmp = Compression.Decompress(gr["bglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk+gr["bglayout"], LevelData.LayoutCmp);
                         for (int lr = 0; lr < 8; lr++)
                             for (int lc = 0; lc < 64; lc++)
                                 LevelData.BGLayout[lc, lr] = tmp[(lr * 64) + lc];
@@ -664,7 +666,7 @@ namespace JSONLevelConverter
                 for (byte pn = 0; pn < palentstr.Length; pn++)
                 {
                     string[] palent = palentstr[pn].Split(':');
-                    tmp = File.ReadAllBytes(palent[0]);
+                    tmp = File.ReadAllBytes(presk + palent[0]);
                     ushort[] palfile;
                     if (LevelData.PaletteFmt != EngineVersion.SCDPC)
                     {
@@ -687,9 +689,9 @@ namespace JSONLevelConverter
             LevelData.Objects = new List<ObjectEntry>();
             if (gr.ContainsKey("objects"))
             {
-                if (File.Exists(gr["objects"]))
+                if (File.Exists(presk + gr["objects"]))
                 {
-                    tmp = Compression.Decompress(gr["objects"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("objectscmp", "Uncompressed")));
+                    tmp = Compression.Decompress(presk+gr["objects"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("objectscmp", "Uncompressed")));
                     switch (LevelData.ObjectFmt)
                     {
                         case EngineVersion.S1:
@@ -736,9 +738,9 @@ namespace JSONLevelConverter
                 {
                     case EngineVersion.S2:
                     case EngineVersion.S2NA:
-                        if (File.Exists(gr["rings"]))
+                        if (File.Exists(presk + gr["rings"]))
                         {
-                            tmp = Compression.Decompress(gr["rings"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("ringscmp", "Uncompressed")));
+                            tmp = Compression.Decompress(presk+gr["rings"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("ringscmp", "Uncompressed")));
                             for (int oa = 0; oa < tmp.Length; oa += S2RingEntry.Size)
                             {
                                 if (ByteConverter.ToUInt16(tmp, oa) == 0xFFFF) break;
@@ -748,9 +750,9 @@ namespace JSONLevelConverter
                         break;
                     case EngineVersion.S3K:
                     case EngineVersion.SKC:
-                        if (File.Exists(gr["rings"]))
+                        if (File.Exists(presk + gr["rings"]))
                         {
-                            tmp = Compression.Decompress(gr["rings"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("ringscmp", "Uncompressed")));
+                            tmp = Compression.Decompress(presk + gr["rings"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("ringscmp", "Uncompressed")));
                             for (int oa = 4; oa < tmp.Length; oa += S3KRingEntry.Size)
                             {
                                 if (ByteConverter.ToUInt16(tmp, oa) == 0xFFFF) break;
@@ -763,9 +765,9 @@ namespace JSONLevelConverter
             if (gr.ContainsKey("bumpers"))
             {
                 LevelData.Bumpers = new List<CNZBumperEntry>();
-                if (File.Exists(gr["bumpers"]))
+                if (File.Exists(presk + gr["bumpers"]))
                 {
-                    tmp = Compression.Decompress(gr["bumpers"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("bumperscmp", "Uncompressed")));
+                    tmp = Compression.Decompress(presk + gr["bumpers"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("bumperscmp", "Uncompressed")));
                     for (int i = 0; i < tmp.Length; i += CNZBumperEntry.Size)
                     {
                         if (ByteConverter.ToUInt16(tmp, i + 2) == 0xFFFF) break;
@@ -784,9 +786,9 @@ namespace JSONLevelConverter
                 foreach (string item in stposs)
                 {
                     string[] stpos = item.Split(':');
-                    if (File.Exists(stpos[0]))
+                    if (File.Exists(presk + stpos[0]))
                     {
-                        StartPositionEntry ent = new StartPositionEntry(System.IO.File.ReadAllBytes(stpos[0]), 0);
+                        StartPositionEntry ent = new StartPositionEntry(System.IO.File.ReadAllBytes(presk + stpos[0]), 0);
                         LevelData.StartPositions.Add(ent);
                     }
                     else
@@ -821,18 +823,18 @@ namespace JSONLevelConverter
                 case EngineVersion.S1:
                 case EngineVersion.SCD:
                 case EngineVersion.SCDPC:
-                    if (gr.ContainsKey("colind") && File.Exists(gr["colind"]))
-                        LevelData.ColInds1.AddRange(Compression.Decompress(gr["colind"], LevelData.ColIndCmp));
+                    if (gr.ContainsKey("colind") && File.Exists(presk + gr["colind"]))
+                        LevelData.ColInds1.AddRange(Compression.Decompress(presk + gr["colind"], LevelData.ColIndCmp));
                     LevelData.ColInds2 = LevelData.ColInds1;
                     break;
                 case EngineVersion.S2:
                 case EngineVersion.S2NA:
-                    if (gr.ContainsKey("colind1") && File.Exists(gr["colind1"]))
-                        LevelData.ColInds1.AddRange(Compression.Decompress(gr["colind1"], LevelData.ColIndCmp));
+                    if (gr.ContainsKey("colind1") && File.Exists(presk + gr["colind1"]))
+                        LevelData.ColInds1.AddRange(Compression.Decompress(presk + gr["colind1"], LevelData.ColIndCmp));
                     if (gr.ContainsKey("colind2"))
                     {
-                        if (File.Exists(gr["colind2"]))
-                            LevelData.ColInds2.AddRange(Compression.Decompress(gr["colind2"], LevelData.ColIndCmp));
+                        if (File.Exists(presk + gr["colind2"]))
+                            LevelData.ColInds2.AddRange(Compression.Decompress(presk + gr["colind2"], LevelData.ColIndCmp));
                     }
                     else
                         LevelData.ColInds2 = LevelData.ColInds1;
@@ -841,9 +843,9 @@ namespace JSONLevelConverter
                 case EngineVersion.SKC:
                     if (gr.ContainsKey("colind"))
                     {
-                        if (File.Exists(gr["colind"]))
+                        if (File.Exists(presk + gr["colind"]))
                         {
-                            tmp = Compression.Decompress(gr["colind"], LevelData.ColIndCmp);
+                            tmp = Compression.Decompress(presk + gr["colind"], LevelData.ColIndCmp);
                             int colindt = int.Parse(gr.GetValueOrDefault("colindsz", "1"));
                             switch (colindt)
                             {
@@ -879,8 +881,8 @@ namespace JSONLevelConverter
             }
             LevelData.ColArr1 = new sbyte[256][];
             LevelData.ColArr2 = new sbyte[256][];
-            if (File.Exists(gr.GetValueOrDefault("colarr1", ini[string.Empty].GetValueOrDefault("colarr1", string.Empty))))
-                tmp = Compression.Decompress(gr.GetValueOrDefault("colarr1", ini[string.Empty].GetValueOrDefault("colarr1", null)), Compression.CompressionType.Uncompressed);
+            if (File.Exists(presk + gr.GetValueOrDefault("colarr1", ini[string.Empty].GetValueOrDefault("colarr1", string.Empty))))
+                tmp = Compression.Decompress(presk + gr.GetValueOrDefault("colarr1", ini[string.Empty].GetValueOrDefault("colarr1", null)), Compression.CompressionType.Uncompressed);
             else
                 tmp = new byte[256 * 16];
             for (int i = 0; i < 256; i++)
@@ -889,8 +891,8 @@ namespace JSONLevelConverter
                 for (int j = 0; j < 16; j++)
                     LevelData.ColArr1[i][j] = unchecked((sbyte)tmp[(i * 16) + j]);
             }
-            if (File.Exists(gr.GetValueOrDefault("colarr2", ini[string.Empty].GetValueOrDefault("colarr2", string.Empty))))
-                tmp = Compression.Decompress(gr.GetValueOrDefault("colarr2", ini[string.Empty].GetValueOrDefault("colarr2", null)), Compression.CompressionType.Uncompressed);
+            if (File.Exists(presk + gr.GetValueOrDefault("colarr2", ini[string.Empty].GetValueOrDefault("colarr2", string.Empty))))
+                tmp = Compression.Decompress(presk + gr.GetValueOrDefault("colarr2", ini[string.Empty].GetValueOrDefault("colarr2", null)), Compression.CompressionType.Uncompressed);
             else
                 tmp = new byte[256 * 16];
             for (int i = 0; i < 256; i++)
@@ -899,8 +901,8 @@ namespace JSONLevelConverter
                 for (int j = 0; j < 16; j++)
                     LevelData.ColArr2[i][j] = unchecked((sbyte)tmp[(i * 16) + j]);
             }
-            if (File.Exists(gr.GetValueOrDefault("angles", ini[string.Empty].GetValueOrDefault("angles", string.Empty))))
-                LevelData.Angles = Compression.Decompress(gr.GetValueOrDefault("angles", ini[string.Empty].GetValueOrDefault("angles", string.Empty)), Compression.CompressionType.Uncompressed);
+            if (File.Exists(presk + gr.GetValueOrDefault("angles", ini[string.Empty].GetValueOrDefault("angles", string.Empty))))
+                LevelData.Angles = Compression.Decompress(presk + gr.GetValueOrDefault("angles", ini[string.Empty].GetValueOrDefault("angles", string.Empty)), Compression.CompressionType.Uncompressed);
             else
                 LevelData.Angles = new byte[256];
             bool LE = LevelData.littleendian;
@@ -1075,7 +1077,8 @@ namespace JSONLevelConverter
             js.Serialize(jw, outdata);
             jw.Close();
 
-            File.WriteAllText(level + ".js", new Jsonner(File.ReadAllText(level + ".js")).get());
+            File.WriteAllText("../LevelOutput/" + level + ".js", File.ReadAllText(level + ".js"));
+            File.WriteAllText("../LevelOutput/" + level + ".min.js", new Jsonner(File.ReadAllText(level + ".js")).get());
             LevelData.littleendian = LE;
         }
 
