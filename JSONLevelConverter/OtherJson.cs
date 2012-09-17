@@ -15,6 +15,7 @@ namespace JSONLevelConverter.OtherJSON
 
             SLData d2=new SLData()
                           {
+                              PaletteItems = toAnotherArray(data.PaletteItems,a=>a.ToArray()),
                               StartPositions = new List<SLDataStartPositionEntry>(data.StartPositions.Select(a => new SLDataStartPositionEntry(){Type=a.Type,X=a.X,Y=a.Y})),
                               AnimatedFiles = toTripleByteArray(data.AnimatedFiles),
                               Animations = new List<SLDataAnimation>(data.Animations.Select(a=>new SLDataAnimation(){AnimationFile=a.AnimationFile,AnimationTileIndex=a.AnimationTileIndex,
@@ -46,6 +47,7 @@ namespace JSONLevelConverter.OtherJSON
 
 
         }
+
 
         private static T1[][][] toTripleAnotherArray<T1, T2>(T2[][][] angles, Func<T2, T1> map)
         {
@@ -125,6 +127,7 @@ namespace JSONLevelConverter.OtherJSON
             return fm;
         }
 
+        public AnimatedPaletteItem[][] PaletteItems { get; set; }
         public List<SLDataStartPositionEntry> StartPositions { get; set; }
         public int[][][] AnimatedFiles { get; set; }
         public List<SLDataAnimation> Animations { get; set; }

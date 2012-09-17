@@ -1214,7 +1214,8 @@ namespace JSONLevelConverter
             if (cd != string.Empty)
             {
 
-                outdata.PaletteItems = paletteItems.Where(a => a.Key.Contains(cd)).Select(a => a.Value);
+                
+                outdata.PaletteItems = paletteItems.Where(a => a.Key.Contains(cd)).Select(a => a.Value).ToArray();
 
 
 
@@ -1456,11 +1457,11 @@ namespace JSONLevelConverter
                 if (!Directory.Exists("c:\\sprites\\" + save + "\\palette" + ind)) Directory.CreateDirectory("c:\\sprites\\" + save + "\\palette" + ind);
 
                 while (true)
-                    if (File.Exists("c:\\sprites\\" + save + "\\palette" + ind + "\\" + save + name + ".bmp"))
+                    if (File.Exists("c:\\sprites\\" + save + "\\palette" + ind + "\\" +  name + ".bmp"))
                         name += 1;
                     else break;
 
-                images[0].Save("c:\\sprites\\" + save + "\\palette" + ind + "\\" + save + name + ".bmp");
+                images[0].Save("c:\\sprites\\" + save + "\\palette" + ind + "\\" + name + ".bmp");
                 continue;/*
                 AnimatedGifEncoder eb = new AnimatedGifEncoder();
                 eb.Start("b:\\sprites\\" + save + "\\palette" + ind + "\\" + name + ".gif");

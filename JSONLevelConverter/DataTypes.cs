@@ -8,7 +8,7 @@ namespace JSONLevelConverter
 {
     public class JSONLevelData
     {
-        public object PaletteItems { get; set; }
+        public List<AnimatedPaletteItem>[] PaletteItems { get; set; }
         public List<StartPositionEntry> StartPositions;
         public byte[][][] AnimatedFiles { get; set; }
         public List<Animation> Animations { get; set; }
