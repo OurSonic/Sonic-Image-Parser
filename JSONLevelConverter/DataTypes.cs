@@ -6,18 +6,19 @@ using Newtonsoft.Json;
 
 namespace JSONLevelConverter
 {
-    internal class JSONLevelData
+    public class JSONLevelData
     {
+        public object PaletteItems { get; set; }
         public List<StartPositionEntry> StartPositions;
         public byte[][][] AnimatedFiles { get; set; }
         public List<Animation> Animations { get; set; }
         public byte[][] Tiles { get; set; }
         public PatternIndex[][] Blocks { get; set; }
         public ChunkBlock[][] Chunks { get; set; }
-        public byte[] Foreground { get; set; }
+        public byte[][] Foreground { get; set; }
         public int ForegroundWidth { get; set; }
         public int ForegroundHeight { get; set; }
-        public byte[] Background { get; set; }
+        public byte[][] Background { get; set; }
         public int BackgroundWidth { get; set; }
         public int BackgroundHeight { get; set; }
         public string[][] Palette { get; set; }
@@ -32,7 +33,47 @@ namespace JSONLevelConverter
         public sbyte[][] RotatedHeightMaps { get; set; }
         public byte[] Angles { get; set; }
     }
-    internal class Animation
+
+
+    public class AnimatedPaletteItem
+    {
+
+        public int SkipIndex { get; set; }
+        public int TotalLength { get; set; }
+        public string Palette { get; set; }
+
+        public List<AnimatedPalettePiece> Pieces { get; set; }
+    }
+
+    public class AnimatedPalettePiece
+    {
+
+        public int PaletteMultiply { get; set; }
+        public int PaletteOffset { get; set; }
+        public int PaletteIndex { get; set; }
+    }
+
+
+    public class AnimatedPaletteLine
+    {
+        public List<Tuple<string, string>> GoodLines;
+
+        public AnimatedPaletteLine(List<Tuple<string, string>> tuples, bool b)
+        {
+            Lines = tuples;
+            NotHeader = b;
+        }
+        public AnimatedPaletteLine()
+        {
+        }
+
+        public List<Tuple<string, string>> Lines { get; set; }
+        public bool NotHeader { get; set; }
+    }
+
+
+
+    public class Animation
     {
         public int AnimationFile { get; set; }
         public int AnimationTileIndex { get; set; }
@@ -54,7 +95,7 @@ namespace JSONLevelConverter
         }
 
     }
-    internal class AnimationFrame
+    public class AnimationFrame
     {
         public int StartingTileIndex { get; set; }
         public int Ticks { get; set; }
@@ -69,7 +110,7 @@ namespace JSONLevelConverter
 
     }
 
-    internal class PatternIndex
+    public class PatternIndex
     {
         public bool Priority { get; set; }
         private byte _pal;
@@ -124,7 +165,7 @@ namespace JSONLevelConverter
         }
     }
 
-    internal class Block
+    public class Block
     {
         [JsonIgnore]
         public PatternIndex[,] tiles { get; set; }
@@ -171,7 +212,7 @@ namespace JSONLevelConverter
         }
     }
 
-    internal enum Solidity : byte
+    public enum Solidity : byte
     {
         NotSolid = 0,
         TopSolid = 1,
@@ -179,7 +220,7 @@ namespace JSONLevelConverter
         AllSolid = 3
     }
 
-    internal abstract class ChunkBlock
+    public abstract class ChunkBlock
     {
         protected byte _so1;
         public Solidity Solid1
@@ -214,7 +255,7 @@ namespace JSONLevelConverter
         public abstract byte[] GetBytes();
     }
 
-    internal class S2ChunkBlock : ChunkBlock
+    public class S2ChunkBlock : ChunkBlock
     {
         private byte _so2;
         public Solidity Solid2
@@ -252,7 +293,7 @@ namespace JSONLevelConverter
         }
     }
 
-    internal class S1ChunkBlock : ChunkBlock
+    public class S1ChunkBlock : ChunkBlock
     {
         public S1ChunkBlock() { }
 
@@ -275,7 +316,7 @@ namespace JSONLevelConverter
         }
     }
 
-    internal class Chunk
+    public class Chunk
     {
         [JsonIgnore]
         public ChunkBlock[,] blocks { get; set; }
@@ -615,7 +656,7 @@ namespace JSONLevelConverter
     }
 
     [Serializable()]
-    internal abstract class RingEntry : Entry, IComparable<RingEntry>
+    public abstract class RingEntry : Entry, IComparable<RingEntry>
     {
         int IComparable<RingEntry>.CompareTo(RingEntry other)
         {
@@ -627,7 +668,7 @@ namespace JSONLevelConverter
 
     [DefaultProperty("Count")]
     [Serializable()]
-    internal class S2RingEntry : RingEntry
+    public class S2RingEntry : RingEntry
     {
         [DefaultValue(Direction.Horizontal)]
         public Direction Direction { get; set; }
@@ -671,7 +712,7 @@ namespace JSONLevelConverter
     }
 
     [Serializable()]
-    internal class S3KRingEntry : RingEntry
+    public class S3KRingEntry : RingEntry
     {
         public static int Size { get { return 4; } }
 
@@ -700,7 +741,7 @@ namespace JSONLevelConverter
 
     [DefaultProperty("ID")]
     [Serializable()]
-    internal class CNZBumperEntry : Entry, IComparable<CNZBumperEntry>
+    public class CNZBumperEntry : Entry, IComparable<CNZBumperEntry>
     {
         [Browsable(false)]
         public ushort ID { get; set; }
@@ -747,7 +788,7 @@ namespace JSONLevelConverter
         }
     }
 
-    internal class StartPositionEntry : Entry
+    public class StartPositionEntry : Entry
     {
         public static int Size { get { return 4; } }
 

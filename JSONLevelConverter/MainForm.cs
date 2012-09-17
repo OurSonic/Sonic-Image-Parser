@@ -4,8 +4,13 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using System.Xml.Serialization;
+using JSONLevelConverter.OtherJSON;
+using System.Drawing.Imaging;
+using SonicRetro.SonLVL;
 
 namespace JSONLevelConverter
 {
@@ -14,7 +19,7 @@ namespace JSONLevelConverter
         public MainForm()
         {
             InitializeComponent();
-            this.fileSelector1.FileName = pre+@"Sonic 3K SVN INIs\S3KLVL.ini";
+            this.fileSelector1.FileName = pre + @"Sonic 3K SVN INIs\S3KLVL.ini";
             fileSelector1_FileNameChanged(this.fileSelector1, null);
             button1.Enabled = true;
             button2.Enabled = true;
@@ -25,11 +30,255 @@ namespace JSONLevelConverter
         private Dictionary<string, Dictionary<string, string>> ini;
         string Dir = Environment.CurrentDirectory;
         private Dictionary<string, byte[][]> AnimationFiles = new Dictionary<string, byte[][]>();
+        private Dictionary<string, List<AnimatedPaletteItem>> paletteItems;
+
+        private Dictionary<string, string> paletteSwaps;
+
         private static string pre = Directory.GetCurrentDirectory() + "/../../../Data/";
         private static string presk { get { return pre + "Sonic 3K SVN INIs/Build Scipts/"; } }
-
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
         public void getFiles()
         {
+
+
+
+            var dec = presk+@"..\Levels\Misc\StartingWaterHeights.bin";
+            var fe = ReadFully(File.OpenRead(dec));
+            for (int i = 0; i < fe.Length / 2; i++)
+            {
+                short value = BitConverter.ToInt16(fe, i);
+
+                Console.Write(value);
+
+            }
+
+
+
+            string[] plines = File.ReadAllLines(pre+@"animatedPalettesLines.txt");
+            paletteSwaps = new Dictionary<string, string>();
+            var lastName = "";
+            foreach (var pline_ in plines)
+            {
+                var pline = pline_.Replace("\t", " ");
+                if (!string.IsNullOrEmpty(pline))
+                {
+                    var psp = pline.Split(':');
+                    if (psp.Length == 1)
+                    {
+
+                        var val = pline.Trim().Trim('\t').Replace("dc.w ", "");
+
+                        var value = val.Split(',').Aggregate("", (a, b) =>
+                        {
+                            b = b.Replace("$", "").Trim().PadLeft(3, '0');
+                            return a + "\"" + ((int.Parse(b.Substring(2, 1), NumberStyles.HexNumber) * 0x11).ToString("X2")
+                                        + (int.Parse(b.Substring(1, 1), NumberStyles.HexNumber) * 0x11).ToString("X2")
+                                        + (int.Parse(b.Substring(0, 1), NumberStyles.HexNumber) * 0x11).ToString("X2")) + "\",";
+                        }) + "]";
+
+
+                        paletteSwaps[lastName] = paletteSwaps[lastName].Substring(0, paletteSwaps[lastName].Length - 1) + value;
+
+                    }
+                    else
+                    {
+                        var name = lastName = psp[0];
+                        var val = psp[1].Trim().Replace("dc.w", "");
+
+                        var value = "[" + val.Split(',').Aggregate("", (a, b) =>
+                        {
+                            b = b.Replace("$", "").Trim().PadLeft(3, '0');
+                            return a + "\"" + ((int.Parse(b.Substring(2, 1), NumberStyles.HexNumber) * 0x11).ToString("X2")
+                                        + (int.Parse(b.Substring(1, 1), NumberStyles.HexNumber) * 0x11).ToString("X2")
+                                        + (int.Parse(b.Substring(0, 1), NumberStyles.HexNumber) * 0x11).ToString("X2")) + "\",";
+                        }) + "]";
+
+                        paletteSwaps.Add(name, value);
+
+
+                    }
+
+
+                }
+            }
+
+
+
+            string[] rlines = File.ReadAllLines(pre+@"animatedPalettes.txt");
+            Dictionary<string, AnimatedPaletteLine> lins = new Dictionary<string, AnimatedPaletteLine>();
+            foreach (var rline_ in rlines)
+            {
+                if (rline_.Length == 0) continue;
+
+                if (rline_.StartsWith(";"))
+                    continue;
+                var rline = rline_;
+                if (!rline.StartsWith("\t"))
+                {
+                    if (!rline.EndsWith(":"))
+                        throw new Exception("");
+                    lins.Add(rline.Replace(":", ""), new AnimatedPaletteLine(new List<Tuple<string, string>>(), false));
+                    continue;
+                }
+                var sp = rline_.Trim('\t').Split('\t');
+                if (sp.Length == 1)
+                    lins.Last().Value.Lines.Add(new Tuple<string, string>(sp[0], ""));
+                else
+                    lins.Last().Value.Lines.Add(new Tuple<string, string>(sp[0], sp[1]));
+            }
+
+
+            foreach (var lin in lins)
+            {
+                setVales(lin.Value, lins);
+            }
+            foreach (var lin in lins.Where(a => !a.Value.NotHeader && a.Key.StartsWith("An")))
+            {
+                lin.Value.GoodLines = new List<Tuple<string, string>>();
+
+
+
+                for (int i = 0; i < lin.Value.Lines.Count; i++)
+                {
+                    Tuple<string, string> l = lin.Value.Lines[i];
+
+
+                    switch (l.Value1)
+                    {
+                        case "subq.w": continue;
+                        case "rts": continue;
+                        case "move.b": continue;
+                        case "tst.b": continue;
+
+                        case "move.w":
+                            if (l.Value2.EndsWith(",d0")) continue;
+                            if (lin.Value.Lines[i - 1].Value1 == "rts") continue;
+
+                            if (l.Value2.StartsWith("(") || l.Value2.StartsWith("2") || l.Value2.StartsWith("4"))
+                                break;
+
+
+                            for (int ia = i + 1; ia < lin.Value.Lines.Count; ia++)
+                            {
+                                var lc = lin.Value.Lines[i];
+                                if (lc.Value1 == "move.w" && lc.Value2.EndsWith(",d0"))
+                                    i = ia;
+                                break;
+                            }
+
+                            continue;
+                    }
+
+
+                    lin.Value.GoodLines.Add(l);
+                }
+            }
+            StringBuilder be = new StringBuilder();
+
+            foreach (var l in lins.Where(a => !a.Value.NotHeader && a.Key.StartsWith("An")))
+            {
+                be.AppendLine(l.Key + ":");
+                foreach (var animatedPaletteLine in l.Value.GoodLines)
+                {
+                    be.AppendLine("\t" + animatedPaletteLine.Value1 + "\t" + animatedPaletteLine.Value2);
+
+                }
+            }
+
+            File.WriteAllText("C:\\ab2.txt", be.ToString());
+
+
+
+            paletteItems = new Dictionary<string, List<AnimatedPaletteItem>>();
+            foreach (var l in lins.Where(a => !a.Value.NotHeader && a.Key.StartsWith("An")))
+            {
+
+                List<AnimatedPaletteItem> pl = new List<AnimatedPaletteItem>();
+                paletteItems.Add(l.Key, pl);
+                bool newOne = false;
+                pl.Add(new AnimatedPaletteItem() { Pieces = new List<AnimatedPalettePiece>() });
+                foreach (var line in l.Value.GoodLines)
+                {
+                    if (!(line.Value1.Contains("move.l") || line.Value1.Contains("move.w")) && newOne)
+                    {
+                        pl.Add(new AnimatedPaletteItem() { Pieces = new List<AnimatedPalettePiece>() });
+                        newOne = false;
+                    }
+                    switch (line.Value1)
+                    {
+                        case "moveq":
+
+                        case "subq.w":
+                        case "subq.b":
+                        case "subi.w":
+                        case "subi.b":
+                            break;
+                        case "addq.w":
+                        case "addq.b":
+                        case "addi.w":
+                        case "andi.w":
+                        case "cmpi.w":
+                            if (pl.Last().SkipIndex == 0)
+                                pl.Last().SkipIndex = Convert.ToInt32(line.Value2.Split(',')[0].Replace("#", "").Replace("$", ""), 16);
+                            else
+                                pl.Last().TotalLength = Convert.ToInt32(line.Value2.Split(',')[0].Replace("#", "").Replace("$", ""), 16);
+                            break;
+                        case "lea":
+                            if (!paletteSwaps.ContainsKey(line.Value2.Substring(1, line.Value2.IndexOf(')') - 1)))
+                                continue;
+                            pl.Last().Palette = paletteSwaps[line.Value2.Substring(1, line.Value2.IndexOf(')') - 1)];
+                            break;
+                        case "move.l":
+                        case "move.w":
+                            if (line.Value2.EndsWith("(a0)+,(a1)+") || line.Value2.EndsWith("(a0),(a1)+"))
+                                continue;
+                            var sp = line.Value2.Replace("(a0,d0.w)", "").Split(',');
+
+                            var f = (sp[0].Length == 0 ? 0 : (int.Parse(sp[0][0].ToString()) / 2));
+
+                            sp[1] = sp[1].Replace("(", "").Replace(").w", "");
+                            if (sp[1].StartsWith("Water_palette_line_"))
+                            {
+                                continue;
+                            }
+
+                            var de = sp[1].Replace("Normal_palette_line_", "").Split('+');
+                            var d = pl.Last();
+
+
+                            pl.Last().Pieces.Add(new AnimatedPalettePiece()
+                            {
+                                PaletteIndex = int.Parse(de[0]) - 1,
+                                PaletteMultiply = f,
+                                PaletteOffset = Convert.ToInt32(de[1].Replace("$", ""), 16),
+
+                            });
+                            //	move.l	(a0,d0.w),(Normal_palette_line_3+$16).w
+                            //  move.l	4(a0,d0.w),(Normal_palette_line_3+$1A).w
+                            newOne = true;
+                            break;
+
+                        default: throw new Exception("");
+                    }
+                }
+            }
+
+
+
+
+
             var lines = File.ReadAllLines(pre + "AnimationFiles.txt");
             int lineIndex = 0;
 
@@ -42,7 +291,7 @@ namespace JSONLevelConverter
 
                     if (File.Exists(pre + f[1]))
                     {
-                        var tmp = Compression.Decompress(pre+ f[1], Compression.CompressionType.Uncompressed);
+                        var tmp = Compression.Decompress(pre + f[1], Compression.CompressionType.Uncompressed);
                         List<byte[]> tiles = new List<byte[]>(tmp.Length / 32);
 
                         var m = new byte[tmp.Length / 32][];
@@ -62,35 +311,35 @@ namespace JSONLevelConverter
 
             var vlines = File.ReadAllLines(pre + "AnimationScripts.txt");
 
-             animations=new Dictionary<string, Tuple<List<string>,List<Animation>>>();
+            animations = new Dictionary<string, Tuple<List<string>, List<Animation>>>();
 
             var len = "dc.w ".Length;
             Animation curAni = null;
             int index = 0;
             int lastDone = 0;
-            List<Animation> anim = null; List<string> animFiles = null; 
+            List<Animation> anim = null; List<string> animFiles = null;
             foreach (var curc in vlines)
             {
-                if(!curc.StartsWith("\t\t"))
+                if (!curc.StartsWith("\t\t"))
                 {
-                    
-                    animations.Add(curc.Split(':')[0], new Tuple<List<string>, List<Animation>>(animFiles=new List<string>(), anim = new List<Animation>()));
+
+                    animations.Add(curc.Split(':')[0], new Tuple<List<string>, List<Animation>>(animFiles = new List<string>(), anim = new List<Animation>()));
                     continue;
                 }
-                var cur = curc.Replace("\t\t",""); 
-                  cur = cur.Replace(";", "");
+                var cur = curc.Replace("\t\t", "");
+                cur = cur.Replace(";", "");
                 if (cur.StartsWith("dc.l") && index != 1)
                 {
-                    lastDone = index; 
+                    lastDone = index;
                 }
 
                 switch (index++ - lastDone)
-                { 
+                {
                     case 0:
                         curAni = new Animation();
                         var mm = cur.Replace("dc.l ", "");
                         var f = (mm.Contains('+') ? mm.Split('+') : mm.Split('-'))[0];
-                        if(!AnimationFiles.ContainsKey(f))
+                        if (!AnimationFiles.ContainsKey(f))
                             throw new Exception();
                         var d = AnimationFiles[f];
                         var count = 0;
@@ -102,8 +351,8 @@ namespace JSONLevelConverter
                         else
                         {
                             count = animFiles.IndexOf(f);
-                        } 
-                        curAni.AnimationFile = count; 
+                        }
+                        curAni.AnimationFile = count;
                         anim.Add(curAni);
                         break;
                     case 1:
@@ -129,8 +378,37 @@ namespace JSONLevelConverter
             }
 
 
-          //  var dc=animations.Select(a => a.Key).Aggregate("", (a, b) => a + b + "\r\n");
-          //  Console.Write(dc);
+            //  var dc=animations.Select(a => a.Key).Aggregate("", (a, b) => a + b + "\r\n");
+            //  Console.Write(dc);
+        }
+
+        private static void setVales(AnimatedPaletteLine lin, Dictionary<string, AnimatedPaletteLine> lins)
+        {
+            foreach (var l in lin.Lines.ToArray())
+            {
+                switch (l.Value1)
+                {
+                    case "bchg":
+                    case "tst.w":
+                    case "neg.b":
+                        lin.Lines.Remove(l);
+
+                        break;
+                    case "bne.s":
+                    case "bpl.s":
+                    case "bra.s":
+                    case "bmi.s":
+                    case "beq.s":
+                    case "bcc.s":
+                    case "bcs.s":
+                        var j = lin.Lines.IndexOf(l);
+                        lin.Lines.Remove(l);
+                        lins[l.Value2].NotHeader = true;
+                        setVales(lins[l.Value2], lins);
+                        lin.Lines.InsertRange(j, lins[l.Value2].Lines);
+                        break;
+                }
+            }
         }
 
 
@@ -219,7 +497,7 @@ namespace JSONLevelConverter
 
         private void ConvertLevel()
         {
-            
+
             Dictionary<string, string> egr = ini[string.Empty];
             try
             {
@@ -254,7 +532,7 @@ namespace JSONLevelConverter
             string level = (string)comboBox1.SelectedItem;
             Dictionary<string, string> gr = ini[level];
 
-    
+
 
             LevelData.TileFmt = gr.ContainsKey("tile8fmt") ? (EngineVersion)Enum.Parse(typeof(EngineVersion), gr["tile8fmt"]) : egr.ContainsKey("tile8fmt") ? (EngineVersion)Enum.Parse(typeof(EngineVersion), egr["tile8fmt"]) : LevelData.EngineVersion;
             LevelData.BlockFmt = gr.ContainsKey("block16fmt") ? (EngineVersion)Enum.Parse(typeof(EngineVersion), gr["block16fmt"]) : egr.ContainsKey("block16fmt") ? (EngineVersion)Enum.Parse(typeof(EngineVersion), egr["block16fmt"]) : LevelData.EngineVersion;
@@ -317,7 +595,7 @@ namespace JSONLevelConverter
                         else
                             off = int.Parse(offstr, System.Globalization.NumberStyles.Integer);
                     }
-                    if (File.Exists(presk+tileentsp[0]))
+                    if (File.Exists(presk + tileentsp[0]))
                     {
                         tmp = Compression.Decompress(presk + tileentsp[0], LevelData.TileCmp);
                         List<byte[]> tiles = new List<byte[]>();
@@ -336,9 +614,9 @@ namespace JSONLevelConverter
             else
             {
                 LevelData.TileCmp = Compression.CompressionType.SZDD;
-                if (File.Exists(presk+gr["tile8"]))
+                if (File.Exists(presk + gr["tile8"]))
                 {
-                    tmp = Compression.Decompress(presk+gr["tile8"], Compression.CompressionType.SZDD);
+                    tmp = Compression.Decompress(presk + gr["tile8"], Compression.CompressionType.SZDD);
                     int sta = ByteConverter.ToInt32(tmp, 0xC);
                     int numt = ByteConverter.ToInt32(tmp, 8);
                     List<byte[]> tiles = new List<byte[]>();
@@ -389,7 +667,7 @@ namespace JSONLevelConverter
                 }
                 if (File.Exists(presk + tileentsp[0]))
                 {
-                    tmp = Compression.Decompress(presk+tileentsp[0], LevelData.BlockCmp);
+                    tmp = Compression.Decompress(presk + tileentsp[0], LevelData.BlockCmp);
                     List<Block> tmpblk = new List<Block>();
                     if (LevelData.EngineVersion == EngineVersion.SKC)
                         LevelData.littleendian = false;
@@ -440,7 +718,7 @@ namespace JSONLevelConverter
                 }
                 if (File.Exists(presk + tileentsp[0]))
                 {
-                    tmp = Compression.Decompress(presk+tileentsp[0], LevelData.ChunkCmp);
+                    tmp = Compression.Decompress(presk + tileentsp[0], LevelData.ChunkCmp);
                     tmpchnk = new List<Chunk>();
                     if (fileind == 0)
                     {
@@ -494,7 +772,7 @@ namespace JSONLevelConverter
                     int s1ymax = int.Parse(ini[string.Empty]["levelheightmax"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
                     if (File.Exists(presk + gr["fglayout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["fglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["fglayout"], LevelData.LayoutCmp);
                         fgw = (ushort)(tmp[0] + 1);
                         fgh = (ushort)(tmp[1] + 1);
                         LevelData.FGLayout = new byte[fgw, fgh];
@@ -514,7 +792,7 @@ namespace JSONLevelConverter
                     }
                     if (File.Exists(presk + gr["bglayout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["bglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["bglayout"], LevelData.LayoutCmp);
                         bgw = (ushort)(tmp[0] + 1);
                         bgh = (ushort)(tmp[1] + 1);
                         LevelData.BGLayout = new byte[bgw, bgh];
@@ -537,7 +815,7 @@ namespace JSONLevelConverter
                     s1ymax = int.Parse(ini[string.Empty]["levelheightmax"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
                     if (File.Exists(presk + gr["fglayout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["fglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["fglayout"], LevelData.LayoutCmp);
                         fgw = (ushort)(tmp[0] + 1);
                         fgh = (ushort)(tmp[1] + 1);
                         LevelData.FGLayout = new byte[fgw, fgh];
@@ -552,7 +830,7 @@ namespace JSONLevelConverter
                         LevelData.FGLayout = new byte[s1xmax, s1ymax];
                     if (File.Exists(presk + gr["bglayout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["bglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["bglayout"], LevelData.LayoutCmp);
                         bgw = (ushort)(tmp[0] + 1);
                         bgh = (ushort)(tmp[1] + 1);
                         LevelData.BGLayout = new byte[bgw, bgh];
@@ -570,7 +848,7 @@ namespace JSONLevelConverter
                     LevelData.BGLayout = new byte[128, 16];
                     if (File.Exists(presk + gr["layout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["layout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["layout"], LevelData.LayoutCmp);
                         for (int la = 0; la < tmp.Length; la += 256)
                         {
                             for (int laf = 0; laf < 128; laf++)
@@ -583,7 +861,7 @@ namespace JSONLevelConverter
                 case EngineVersion.S3K:
                     if (File.Exists(presk + gr["layout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["layout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["layout"], LevelData.LayoutCmp);
                         fgw = ByteConverter.ToUInt16(tmp, 0);
                         bgw = ByteConverter.ToUInt16(tmp, 2);
                         fgh = ByteConverter.ToUInt16(tmp, 4);
@@ -611,7 +889,7 @@ namespace JSONLevelConverter
                 case EngineVersion.SKC:
                     if (File.Exists(presk + gr["layout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["layout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["layout"], LevelData.LayoutCmp);
                         fgw = ByteConverter.ToUInt16(tmp, 0);
                         bgw = ByteConverter.ToUInt16(tmp, 2);
                         fgh = ByteConverter.ToUInt16(tmp, 4);
@@ -640,7 +918,7 @@ namespace JSONLevelConverter
                     LevelData.FGLayout = new byte[64, 8];
                     if (File.Exists(presk + gr["fglayout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["fglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["fglayout"], LevelData.LayoutCmp);
                         for (int lr = 0; lr < 8; lr++)
                             for (int lc = 0; lc < 64; lc++)
                             {
@@ -651,7 +929,7 @@ namespace JSONLevelConverter
                     LevelData.BGLayout = new byte[64, 8];
                     if (File.Exists(presk + gr["bglayout"]))
                     {
-                        tmp = Compression.Decompress(presk+gr["bglayout"], LevelData.LayoutCmp);
+                        tmp = Compression.Decompress(presk + gr["bglayout"], LevelData.LayoutCmp);
                         for (int lr = 0; lr < 8; lr++)
                             for (int lc = 0; lc < 64; lc++)
                                 LevelData.BGLayout[lc, lr] = tmp[(lr * 64) + lc];
@@ -666,7 +944,7 @@ namespace JSONLevelConverter
                 for (byte pn = 0; pn < palentstr.Length; pn++)
                 {
                     string[] palent = palentstr[pn].Split(':');
-                    tmp = File.ReadAllBytes(presk + palent[0]);
+                    tmp = File.ReadAllBytes(presk+ palent[0]);
                     ushort[] palfile;
                     if (LevelData.PaletteFmt != EngineVersion.SCDPC)
                     {
@@ -686,12 +964,32 @@ namespace JSONLevelConverter
                         LevelData.Palette[(pa + dest) / 16, (pa + dest) % 16] = palfile[pa + src];
                 }
             }
+
+
+            Bitmap palbmp = new Bitmap(1, 1, PixelFormat.Format8bppIndexed);
+            LevelData.BmpPal = palbmp.Palette;
+            for (int i = 0; i < 64; i++)
+                LevelData.BmpPal.Entries[i] = LevelData.PaletteToColor(i / 16, i % 16, true);
+            for (int i = 64; i < 256; i++)
+                LevelData.BmpPal.Entries[i] = Color.Black;
+            palbmp = new Bitmap(1, 1, PixelFormat.Format8bppIndexed);
+            var LevelImgPalette = palbmp.Palette;
+            for (int i = 0; i < 64; i++)
+                LevelImgPalette.Entries[i] = LevelData.PaletteToColor(i / 16, i % 16, true);
+            for (int i = 64; i < 256; i++)
+                LevelImgPalette.Entries[i] = Color.Black;
+            LevelImgPalette.Entries[0] = LevelData.PaletteToColor(2, 0, false);
+            LevelImgPalette.Entries[64] = Color.White;
+            LevelImgPalette.Entries[65] = Color.Yellow;
+            LevelImgPalette.Entries[66] = Color.Black;
+            LevelImgPalette.Entries[67] = Color.Black;
+
             LevelData.Objects = new List<ObjectEntry>();
             if (gr.ContainsKey("objects"))
             {
                 if (File.Exists(presk + gr["objects"]))
                 {
-                    tmp = Compression.Decompress(presk+gr["objects"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("objectscmp", "Uncompressed")));
+                    tmp = Compression.Decompress(presk + gr["objects"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("objectscmp", "Uncompressed")));
                     switch (LevelData.ObjectFmt)
                     {
                         case EngineVersion.S1:
@@ -740,7 +1038,7 @@ namespace JSONLevelConverter
                     case EngineVersion.S2NA:
                         if (File.Exists(presk + gr["rings"]))
                         {
-                            tmp = Compression.Decompress(presk+gr["rings"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("ringscmp", "Uncompressed")));
+                            tmp = Compression.Decompress(presk + gr["rings"], (Compression.CompressionType)Enum.Parse(typeof(Compression.CompressionType), gr.GetValueOrDefault("ringscmp", "Uncompressed")));
                             for (int oa = 0; oa < tmp.Length; oa += S2RingEntry.Size)
                             {
                                 if (ByteConverter.ToUInt16(tmp, oa) == 0xFFFF) break;
@@ -910,13 +1208,30 @@ namespace JSONLevelConverter
             JSONLevelData outdata = new JSONLevelData();
             outdata.Tiles = LevelData.Tiles.ToArray();
 
+
             outdata.Animations = new List<Animation>();
             var cd = gr.GetValueOrDefault("animations", string.Empty);
             if (cd != string.Empty)
             {
-                Tuple<List<string>, List<Animation>> df = animations["AniPLC_" + cd];
-                outdata.AnimatedFiles = AnimationFiles.Where(a => df.Value1.Contains(a.Key)).Select(a => a.Value).ToArray();
-                outdata.Animations = df.Value2;
+
+                outdata.PaletteItems = paletteItems.Where(a => a.Key.Contains(cd)).Select(a => a.Value);
+
+
+
+
+                outdata.Animations = new List<Animation>();
+
+                List<byte[][]> anItems = new List<byte[][]>();
+
+                foreach (var anItem in cd.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (!animations.ContainsKey("AniPLC_" + anItem)) continue;
+                    Tuple<List<string>, List<Animation>> df = animations["AniPLC_" + anItem];
+                    anItems.AddRange(AnimationFiles.Where(a => df.Value1.Contains(a.Key)).Select(a => a.Value));
+                    outdata.Animations.AddRange(df.Value2);
+
+                }
+                outdata.AnimatedFiles = anItems.ToArray();
             }
             else
             {
@@ -1036,16 +1351,27 @@ namespace JSONLevelConverter
             outdata.BackgroundWidth = LevelData.BGLayout.GetLength(0);
             outdata.ForegroundHeight = LevelData.FGLayout.GetLength(1);
             outdata.BackgroundHeight = LevelData.BGLayout.GetLength(1);
-            List<byte> tmplayout = new List<byte>();
-            for (int y = 0; y < outdata.ForegroundHeight; y++)
-                for (int x = 0; x < outdata.ForegroundWidth; x++)
-                    tmplayout.Add(LevelData.FGLayout[x, y]);
-            outdata.Foreground = tmplayout.ToArray();
-            tmplayout = new List<byte>();
-            for (int y = 0; y < outdata.BackgroundHeight; y++)
-                for (int x = 0; x < outdata.BackgroundWidth; x++)
-                    tmplayout.Add(LevelData.BGLayout[x, y]);
-            outdata.Background = tmplayout.ToArray();
+
+
+
+            byte[][] tmplayout = new byte[outdata.ForegroundWidth][];
+            for (int x = 0; x < outdata.ForegroundWidth; x++)
+            {
+                tmplayout[x] = new byte[outdata.ForegroundHeight];
+                for (int y = 0; y < outdata.ForegroundHeight; y++)
+                    tmplayout[x][y] = (LevelData.FGLayout[x, y]);
+            }
+            outdata.Foreground = tmplayout;
+             tmplayout = new byte[outdata.BackgroundWidth][];
+            for (int x = 0; x < outdata.BackgroundWidth; x++)
+            {
+                tmplayout[x] = new byte[outdata.BackgroundHeight];
+                for (int y = 0; y < outdata.BackgroundHeight; y++)
+                    tmplayout[x][y] = (LevelData.BGLayout[x, y]);
+            }
+
+
+            outdata.Background = tmplayout;
             outdata.Objects = LevelData.Objects.ToArray();
             outdata.ObjectFormat = LevelData.ObjectFmt.ToString();
             outdata.Rings = LevelData.Rings.ToArray();
@@ -1066,15 +1392,37 @@ namespace JSONLevelConverter
             outdata.HeightMaps = LevelData.ColArr1;
             outdata.RotatedHeightMaps = LevelData.ColArr2;
             outdata.Angles = LevelData.Angles;
+
+
+            string d =presk+ @"..\General\Sprites\";
+
+            foreach (var dinfo in new DirectoryInfo(d).GetDirectories())
+            {
+                foreach (var fileInfo in dinfo.GetFiles("*.bin"))
+                {
+                    loadImage(fileInfo.FullName, fileInfo.Directory.FullName + "\\Map - " + fileInfo.Name.Replace(fileInfo.Extension, "") + ".asm", fileInfo.Name.Replace(fileInfo.Extension, ""), gr.GetValueOrDefault("animations", string.Empty));
+                }
+            }
+
+
             StreamWriter sw = new StreamWriter(level + ".js");
+
+
+            /*XmlSerializer ser = new XmlSerializer(outdata.GetType(), new Type[] { typeof(S2ChunkBlock), typeof(S3KObjectEntry), typeof(S3KRingEntry) });
+            ser.Serialize(sw, outdata);
+            sw.Close();*/
+
+
+
             JsonSerializer js = new JsonSerializer();
             JsonTextWriter jw = new JsonTextWriter(sw);
-#if DEBUG
-            jw.Formatting = Formatting.Indented;
-            jw.Indentation = 1;
-            jw.IndentChar = '\t';
+#if !DEBUG
+			jw.Formatting = Formatting.Indented;
+			jw.Indentation = 1;
+			jw.IndentChar = '\t';
 #endif
-            js.Serialize(jw, outdata);
+
+            js.Serialize(jw, SLData.Translate(outdata));
             jw.Close();
 
             File.WriteAllText("../LevelOutput/" + level + ".js", File.ReadAllText(level + ".js"));
@@ -1083,162 +1431,205 @@ namespace JSONLevelConverter
         }
 
 
-  /*      private string[] addAnimations(JSONLevelData outdata)
+
+        private void loadImage(string binFile, string asmFile, string name, string save)
         {
-             
-            //line 56291
-            string data =
-                @"		dc.l ArtUnc_AniCNZ__0+$3000000
-		dc.w $5640
-		dc.b $10
-		dc.b 9
-		dc.b	0, $12
-		dc.b  $24, $36
-		dc.b  $48, $5A
-		dc.b  $6C, $7E
-		dc.b	9, $1B
-		dc.b  $2D, $3F
-		dc.b  $51, $63
-		dc.b  $75, $87
-		dc.l ArtUnc_AniCNZ__0+$3000000
-		dc.w $5760
-		dc.b $10
-		dc.b 9
-		dc.b	9, $1B
-		dc.b  $2D, $3F
-		dc.b  $51, $63
-		dc.b  $75, $87
-		dc.b	0, $12
-		dc.b  $24, $36
-		dc.b  $48, $5A
-		dc.b  $6C, $7E
-		dc.l ArtUnc_AniCNZ__1+$3000000
-		dc.w $5880
-		dc.b $10
-		dc.b $10
-		dc.b	0, $10
-		dc.b  $20, $30
-		dc.b  $40, $50
-		dc.b  $60, $70
-		dc.b  $80, $90
-		dc.b  $A0, $B0
-		dc.b  $C0, $D0
-		dc.b  $E0, $F0
-		dc.l ArtUnc_AniCNZ__2+$3000000
-		dc.w $5A80
-		dc.b 8
-		dc.b $20
-		dc.b	0, $20
-		dc.b  $40, $60
-		dc.b  $80, $A0
-		dc.b  $C0, $E0
-		dc.l ArtUnc_AniCNZ__3+$3000000
-		dc.w $5E80
-		dc.b 8
-		dc.b $10
-		dc.b	0, $10
-		dc.b  $20, $30
-		dc.b  $40, $50
-		dc.b  $60, $70
-		dc.l ArtUnc_AniCNZ__4+$3000000
-		dc.w $6080
-		dc.b 6
-		dc.b 4
-		dc.b	0,   4
-		dc.b	8,   0
-		dc.b	4,   8
-		dc.l ArtUnc_AniCNZ__5+$1000000
-		dc.w $6500
-		dc.b 4
-		dc.b $14
-		dc.b	0, $14
-		dc.b  $28, $3C";
-            var len = "dc.w ".Length;
-            Animation curAni = null;
-            int index = 0;
-            int lastDone = 0;
-            foreach (var curc in data.Replace("\t", "").Split('\n'))
-            {
-                var cur = curc.Replace(";", "");
-                if (cur.StartsWith("dc.l") && index != 1)
-                {
-                    lastDone = index;
-                }
-
-                switch (index++ - lastDone)
-                {
-                    case 0:
-                        curAni = new Animation();
-                        curAni.AnimationFile = outdata.Animations.Count;//fix
-
-                        outdata.Animations.Add(curAni);
-                        break;
-                    case 1:
-                        curAni.AnimationTileIndex = int.Parse(cur.Substring(len, cur.Length - len).Replace("$", ""), NumberStyles.HexNumber) / 32;
-                        break;
-                    case 2:
-                        curAni.Frames = new List<AnimationFrame>(int.Parse(cur.Substring(len, cur.Length - len).Replace("$", ""), NumberStyles.HexNumber));
-                        break;
-                    case 3:
-                        curAni.NumberOfTiles = int.Parse(cur.Substring(len, cur.Length - len).Replace("$", "").Split(',')[0], NumberStyles.HexNumber);
-                        break;
-                    default:
-                        {
-                            var m = cur.Replace("dc.b", "").Replace("$", "").Replace(" ", "").Split(',');
-
-                            curAni.Frames.Add(new AnimationFrame(int.Parse(m[0], NumberStyles.HexNumber),
-                               m.Length == 1 ? 0 :
-                                int.Parse(m[1], NumberStyles.HexNumber)));
-
-                        }
-                        break;
-                }
-            }
             return;
+            for (int ind = 0; ind < 4; ind++)
+            {
+                List<Image> images = new List<Image>();
+                int de = 0;
+                while (true)
+                {
+                    try
+                    {
 
+                        var dc = ObjectHelper.MapASMToBmp(Compression.Decompress(binFile, Compression.CompressionType.Uncompressed), asmFile, de++, ind);
+                        images.Add(dc.Image.ToBitmap(LevelData.BmpPal));
+                    }
+                    catch (Exception ed)
+                    {
+                        break;
+                    }
+                } if (images.Count == 0) continue;
+                if (!Directory.Exists("c:\\sprites\\" + save)) Directory.CreateDirectory("c:\\sprites\\" + save);
+                if (!Directory.Exists("c:\\sprites\\" + save + "\\palette" + ind)) Directory.CreateDirectory("c:\\sprites\\" + save + "\\palette" + ind);
 
+                while (true)
+                    if (File.Exists("c:\\sprites\\" + save + "\\palette" + ind + "\\" + save + name + ".bmp"))
+                        name += 1;
+                    else break;
 
-
-
-
-            var animation = new Animation(0, 0x5cc0 / 0x20, 0xc);
-            animation.AddFrame(new AnimationFrame(0x3c, 0x4f));
-            animation.AddFrame(new AnimationFrame(0x30, 5));
-            animation.AddFrame(new AnimationFrame(0x18, 5));
-            animation.AddFrame(new AnimationFrame(0xC, 5));
-            animation.AddFrame(new AnimationFrame(0x0, 0x4f));
-            animation.AddFrame(new AnimationFrame(0xC, 3));
-            animation.AddFrame(new AnimationFrame(0x18, 3));
-            animation.AddFrame(new AnimationFrame(0x24, 1));
-            animation.AddFrame(new AnimationFrame(0x30, 1));
-            outdata.Animations.Add(animation);
-
-
-            animation = new Animation(0, 0x5e40 / 0x20, 0xc);
-            animation.AddFrame(new AnimationFrame(0x18, 5));
-            animation.AddFrame(new AnimationFrame(0x24, 5));
-            animation.AddFrame(new AnimationFrame(0x30, 5));
-            animation.AddFrame(new AnimationFrame(0x3C, 0x27));
-            animation.AddFrame(new AnimationFrame(0x0, 5));
-            animation.AddFrame(new AnimationFrame(0xC, 5));
-            animation.AddFrame(new AnimationFrame(0x18, 5));
-            animation.AddFrame(new AnimationFrame(0x24, 5));
-
-            outdata.Animations.Add(animation);
-
-            animation = new Animation(1, 0x5FC0 / 0x20, 6);
-            animation.AddFrame(new AnimationFrame(0, 7));
-            animation.AddFrame(new AnimationFrame(6, 3));
-            animation.AddFrame(new AnimationFrame(0xc, 3));
-            animation.AddFrame(new AnimationFrame(0x12, 3));
-            animation.AddFrame(new AnimationFrame(0x18, 7));
-            animation.AddFrame(new AnimationFrame(0x12, 3));
-            animation.AddFrame(new AnimationFrame(0xc, 3));
-            animation.AddFrame(new AnimationFrame(6, 3));
-
-            outdata.Animations.Add(animation);
+                images[0].Save("c:\\sprites\\" + save + "\\palette" + ind + "\\" + save + name + ".bmp");
+                continue;/*
+                AnimatedGifEncoder eb = new AnimatedGifEncoder();
+                eb.Start("b:\\sprites\\" + save + "\\palette" + ind + "\\" + name + ".gif");
+                eb.SetDelay(500);
+                //-1:no repeat,0:always repeat
+                eb.SetRepeat(0);
+                foreach (var image in images)
+                {
+                    eb.AddFrame(image);
+                }
+                eb.Finish();*/
+            }
         }
-*/
+        /*      private string[] addAnimations(JSONLevelData outdata)
+              {
+			 
+                  //line 56291
+                  string data =
+                      @"		dc.l ArtUnc_AniCNZ__0+$3000000
+              dc.w $5640
+              dc.b $10
+              dc.b 9
+              dc.b	0, $12
+              dc.b  $24, $36
+              dc.b  $48, $5A
+              dc.b  $6C, $7E
+              dc.b	9, $1B
+              dc.b  $2D, $3F
+              dc.b  $51, $63
+              dc.b  $75, $87
+              dc.l ArtUnc_AniCNZ__0+$3000000
+              dc.w $5760
+              dc.b $10
+              dc.b 9
+              dc.b	9, $1B
+              dc.b  $2D, $3F
+              dc.b  $51, $63
+              dc.b  $75, $87
+              dc.b	0, $12
+              dc.b  $24, $36
+              dc.b  $48, $5A
+              dc.b  $6C, $7E
+              dc.l ArtUnc_AniCNZ__1+$3000000
+              dc.w $5880
+              dc.b $10
+              dc.b $10
+              dc.b	0, $10
+              dc.b  $20, $30
+              dc.b  $40, $50
+              dc.b  $60, $70
+              dc.b  $80, $90
+              dc.b  $A0, $B0
+              dc.b  $C0, $D0
+              dc.b  $E0, $F0
+              dc.l ArtUnc_AniCNZ__2+$3000000
+              dc.w $5A80
+              dc.b 8
+              dc.b $20
+              dc.b	0, $20
+              dc.b  $40, $60
+              dc.b  $80, $A0
+              dc.b  $C0, $E0
+              dc.l ArtUnc_AniCNZ__3+$3000000
+              dc.w $5E80
+              dc.b 8
+              dc.b $10
+              dc.b	0, $10
+              dc.b  $20, $30
+              dc.b  $40, $50
+              dc.b  $60, $70
+              dc.l ArtUnc_AniCNZ__4+$3000000
+              dc.w $6080
+              dc.b 6
+              dc.b 4
+              dc.b	0,   4
+              dc.b	8,   0
+              dc.b	4,   8
+              dc.l ArtUnc_AniCNZ__5+$1000000
+              dc.w $6500
+              dc.b 4
+              dc.b $14
+              dc.b	0, $14
+              dc.b  $28, $3C";
+                  var len = "dc.w ".Length;
+                  Animation curAni = null;
+                  int index = 0;
+                  int lastDone = 0;
+                  foreach (var curc in data.Replace("\t", "").Split('\n'))
+                  {
+                      var cur = curc.Replace(";", "");
+                      if (cur.StartsWith("dc.l") && index != 1)
+                      {
+                          lastDone = index;
+                      }
+
+                      switch (index++ - lastDone)
+                      {
+                          case 0:
+                              curAni = new Animation();
+                              curAni.AnimationFile = outdata.Animations.Count;//fix
+
+                              outdata.Animations.Add(curAni);
+                              break;
+                          case 1:
+                              curAni.AnimationTileIndex = int.Parse(cur.Substring(len, cur.Length - len).Replace("$", ""), NumberStyles.HexNumber) / 32;
+                              break;
+                          case 2:
+                              curAni.Frames = new List<AnimationFrame>(int.Parse(cur.Substring(len, cur.Length - len).Replace("$", ""), NumberStyles.HexNumber));
+                              break;
+                          case 3:
+                              curAni.NumberOfTiles = int.Parse(cur.Substring(len, cur.Length - len).Replace("$", "").Split(',')[0], NumberStyles.HexNumber);
+                              break;
+                          default:
+                              {
+                                  var m = cur.Replace("dc.b", "").Replace("$", "").Replace(" ", "").Split(',');
+
+                                  curAni.Frames.Add(new AnimationFrame(int.Parse(m[0], NumberStyles.HexNumber),
+                                     m.Length == 1 ? 0 :
+                                      int.Parse(m[1], NumberStyles.HexNumber)));
+
+                              }
+                              break;
+                      }
+                  }
+                  return;
+
+
+
+
+
+
+                  var animation = new Animation(0, 0x5cc0 / 0x20, 0xc);
+                  animation.AddFrame(new AnimationFrame(0x3c, 0x4f));
+                  animation.AddFrame(new AnimationFrame(0x30, 5));
+                  animation.AddFrame(new AnimationFrame(0x18, 5));
+                  animation.AddFrame(new AnimationFrame(0xC, 5));
+                  animation.AddFrame(new AnimationFrame(0x0, 0x4f));
+                  animation.AddFrame(new AnimationFrame(0xC, 3));
+                  animation.AddFrame(new AnimationFrame(0x18, 3));
+                  animation.AddFrame(new AnimationFrame(0x24, 1));
+                  animation.AddFrame(new AnimationFrame(0x30, 1));
+                  outdata.Animations.Add(animation);
+
+
+                  animation = new Animation(0, 0x5e40 / 0x20, 0xc);
+                  animation.AddFrame(new AnimationFrame(0x18, 5));
+                  animation.AddFrame(new AnimationFrame(0x24, 5));
+                  animation.AddFrame(new AnimationFrame(0x30, 5));
+                  animation.AddFrame(new AnimationFrame(0x3C, 0x27));
+                  animation.AddFrame(new AnimationFrame(0x0, 5));
+                  animation.AddFrame(new AnimationFrame(0xC, 5));
+                  animation.AddFrame(new AnimationFrame(0x18, 5));
+                  animation.AddFrame(new AnimationFrame(0x24, 5));
+
+                  outdata.Animations.Add(animation);
+
+                  animation = new Animation(1, 0x5FC0 / 0x20, 6);
+                  animation.AddFrame(new AnimationFrame(0, 7));
+                  animation.AddFrame(new AnimationFrame(6, 3));
+                  animation.AddFrame(new AnimationFrame(0xc, 3));
+                  animation.AddFrame(new AnimationFrame(0x12, 3));
+                  animation.AddFrame(new AnimationFrame(0x18, 7));
+                  animation.AddFrame(new AnimationFrame(0x12, 3));
+                  animation.AddFrame(new AnimationFrame(0xc, 3));
+                  animation.AddFrame(new AnimationFrame(6, 3));
+
+                  outdata.Animations.Add(animation);
+              }
+      */
         private void button2_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < comboBox1.Items.Count; i++)
@@ -1255,10 +1646,10 @@ namespace JSONLevelConverter
     {
         public T Value1;
         public T1 Value2;
-        public Tuple(T t,T1 t1)
+        public Tuple(T t, T1 t1)
         {
             Value1 = t;
             Value2 = t1;
-        } 
+        }
     }
 }
