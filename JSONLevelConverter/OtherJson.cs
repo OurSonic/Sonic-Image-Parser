@@ -202,6 +202,7 @@ namespace JSONLevelConverter.OtherJSON
 
     public class SLDataAnimation
     {
+        public int AutomatedTiming { get; set; }
         public int AnimationFile { get; set; }
         public int AnimationTileIndex { get; set; }
         public int NumberOfTiles { get; set; }

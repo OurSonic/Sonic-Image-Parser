@@ -338,7 +338,20 @@ namespace JSONLevelConverter
                     case 0:
                         curAni = new Animation();
                         var mm = cur.Replace("dc.l ", "");
-                        var f = (mm.Contains('+') ? mm.Split('+') : mm.Split('-'))[0];
+                                   var split = (mm.Contains('+') ? mm.Split('+') : mm.Split('-'));
+                        var f = split[0];
+                        if (split.Length == 1)
+                        {
+                            curAni.AutomatedTiming = 1;
+                        }
+                        else
+                            if (mm.Contains("+"))
+                            {
+                                var val = split[1].Replace("$", "");
+                                curAni.AutomatedTiming = int.Parse(val, NumberStyles.HexNumber) >> 24;
+                            }
+
+
                         if (!AnimationFiles.ContainsKey(f))
                             throw new Exception();
                         var d = AnimationFiles[f];
@@ -368,9 +381,16 @@ namespace JSONLevelConverter
                         {
                             var m = cur.Replace("dc.b", "").Replace("$", "").Replace(" ", "").Split(',');
 
-                            curAni.Frames.Add(new AnimationFrame(int.Parse(m[0], NumberStyles.HexNumber),
-                               m.Length == 1 ? 0 :
-                                int.Parse(m[1], NumberStyles.HexNumber)));
+                            if (curAni.AutomatedTiming > 0)
+                            {
+                                curAni.Frames.Add(new AnimationFrame(int.Parse(m[0], NumberStyles.HexNumber), -1));
+                                if (m.Length == 2)
+                                { curAni.Frames.Add(new AnimationFrame(int.Parse(m[1], NumberStyles.HexNumber), -1)); }
+                            }
+                            else
+                            {
+                                curAni.Frames.Add(new AnimationFrame(int.Parse(m[0], NumberStyles.HexNumber), m.Length == 1 ? 0 : int.Parse(m[1], NumberStyles.HexNumber)));
+                            }
 
                         }
                         break;
@@ -1425,9 +1445,11 @@ namespace JSONLevelConverter
 
             js.Serialize(jw, SLData.Translate(outdata));
             jw.Close();
-
+            if (!Directory.Exists("../LevelOutput/" + level.Split('\\')[0])) {
+                Directory.CreateDirectory("../LevelOutput/" + level.Split('\\')[0]);
+            }
             File.WriteAllText("../LevelOutput/" + level + ".js", File.ReadAllText(level + ".js"));
-            File.WriteAllText("../LevelOutput/" + level + ".min.js", new Jsonner(File.ReadAllText(level + ".js")).get());
+            //File.WriteAllText("../LevelOutput/" + level + ".min.js", new Jsonner(File.ReadAllText(level + ".js")).get());
             LevelData.littleendian = LE;
         }
 
