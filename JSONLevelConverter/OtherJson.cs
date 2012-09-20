@@ -95,7 +95,8 @@ namespace JSONLevelConverter.OtherJSON
                                                                          a =>
                                                                          new SLDataChunkBlock() {
                                                                                                         Block = (short) a.Block,
-                                                                                                        Solid1 = (SLDataSolidity) a.Solid1,
+                                                                                                        Solid1 = (SLDataSolidity)(a).Solid1,
+                                                                                                        Solid2 = (SLDataSolidity)((S2ChunkBlock)a).Solid2,
                                                                                                         XFlip = a.XFlip,
                                                                                                         YFlip = a.YFlip,
                                                                                                 }),
@@ -226,6 +227,7 @@ namespace JSONLevelConverter.OtherJSON
     public class SLDataChunkBlock
     {
         public SLDataSolidity Solid1 { get; set; }
+        public SLDataSolidity Solid2 { get; set; }
         public bool XFlip { get; set; }
         public bool YFlip { get; set; }
         public short Block { get; set; }
